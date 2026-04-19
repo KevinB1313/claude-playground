@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Dashboard</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: #f7f5f0;
+      color: #2c2c2c;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 60px 20px;
+    }
+
+    .dashboard {
+      width: 100%;
+      max-width: 560px;
+    }
+
+    /* Date */
+    .date-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .date-header .weekday {
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 6px;
+    }
+
+    .date-header .date {
+      font-size: 2.4rem;
+      font-weight: normal;
+      color: #1a1a1a;
+    }
+
+    /* Quote */
+    .quote-block {
+      border-left: 3px solid #c9b99a;
+      padding: 12px 20px;
+      margin-bottom: 48px;
+      background: #fdfbf7;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .quote-block p {
+      font-style: italic;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: #444;
+    }
+
+    .quote-block cite {
+      display: block;
+      margin-top: 10px;
+      font-size: 0.85rem;
+      font-style: normal;
+      color: #888;
+    }
+
+    /* To-do list */
+    .todo-section h2 {
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 16px;
+    }
+
+    .todo-list {
+      list-style: none;
+    }
+
+    .todo-list li {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      background: #fff;
+      border: 1px solid #e8e4dc;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .todo-list li:hover { background: #fdfbf7; }
+
+    .todo-list li.done {
+      color: #aaa;
+      text-decoration: line-decoration;
+    }
+
+    .todo-list li.done span.label { text-decoration: line-through; }
+
+    .todo-list input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #c9b99a;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+
+    <header class="date-header">
+      <div class="weekday" id="weekday"></div>
+      <div class="date" id="date"></div>
+    </header>
+
+    <blockquote class="quote-block">
+      <p>"The secret of getting ahead is getting started."</p>
+      <cite>— Mark Twain</cite>
+    </blockquote>
+
+    <section class="todo-section">
+      <h2>Today's Tasks</h2>
+      <ul class="todo-list" id="todo-list">
+        <li>
+          <input type="checkbox" id="t1" />
+          <span class="label">Review morning emails</span>
+        </li>
+        <li>
+          <input type="checkbox" id="t2" />
+          <span class="label">Go for a 20-minute walk</span>
+        </li>
+        <li>
+          <input type="checkbox" id="t3" />
+          <span class="label">Read for 30 minutes before bed</span>
+        </li>
+      </ul>
+    </section>
+
+  </div>
+
+  <script>
+    // Populate the date header
+    const now = new Date();
+    document.getElementById('weekday').textContent = now.toLocaleDateString('en-US', { weekday: 'long' });
+    document.getElementById('date').textContent = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+    // Toggle done state on checkbox change
+    document.getElementById('todo-list').addEventListener('change', function (e) {
+      if (e.target.type === 'checkbox') {
+        e.target.closest('li').classList.toggle('done', e.target.checked);
+      }
+    });
+  </script>
+</body>
+</html>
