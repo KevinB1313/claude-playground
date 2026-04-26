@@ -67,8 +67,9 @@
       color: #888;
     }
 
-    /* To-do list */
-    .todo-section h2 {
+    /* To-do list & Goals */
+    .todo-section h2,
+    .goals-section h2 {
       font-size: 0.8rem;
       letter-spacing: 0.15em;
       text-transform: uppercase;
@@ -110,6 +111,10 @@
       cursor: pointer;
       flex-shrink: 0;
     }
+
+    .goals-section {
+      margin-top: 40px;
+    }
   </style>
 </head>
 <body>
@@ -143,6 +148,24 @@
       </ul>
     </section>
 
+    <section class="goals-section">
+      <h2>This Week's Goals</h2>
+      <ul class="todo-list" id="goals-list">
+        <li>
+          <input type="checkbox" id="g1" />
+          <span class="label">Finish the project proposal draft</span>
+        </li>
+        <li>
+          <input type="checkbox" id="g2" />
+          <span class="label">Exercise at least three times</span>
+        </li>
+        <li>
+          <input type="checkbox" id="g3" />
+          <span class="label">Call a friend or family member</span>
+        </li>
+      </ul>
+    </section>
+
   </div>
 
   <script>
@@ -152,10 +175,12 @@
     document.getElementById('date').textContent = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
     // Toggle done state on checkbox change
-    document.getElementById('todo-list').addEventListener('change', function (e) {
-      if (e.target.type === 'checkbox') {
-        e.target.closest('li').classList.toggle('done', e.target.checked);
-      }
+    ['todo-list', 'goals-list'].forEach(function (id) {
+      document.getElementById(id).addEventListener('change', function (e) {
+        if (e.target.type === 'checkbox') {
+          e.target.closest('li').classList.toggle('done', e.target.checked);
+        }
+      });
     });
   </script>
 </body>
