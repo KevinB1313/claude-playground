@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Philadelphia Phillies — 2026 Batting Stats</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: #f7f5f0;
+      color: #2c2c2c;
+      min-height: 100vh;
+      padding: 48px 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.75rem;
+      font-weight: normal;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+      letter-spacing: 0.02em;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 32px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 6px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      background: #fff;
+    }
+
+    thead tr {
+      background: #E81828;
+      color: #fff;
+    }
+
+    thead th {
+      padding: 11px 10px;
+      font-weight: normal;
+      letter-spacing: 0.06em;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    thead th.col-name {
+      text-align: left;
+      padding-left: 16px;
+    }
+
+    thead th.col-pos {
+      text-align: left;
+    }
+
+    thead th.col-num {
+      text-align: right;
+    }
+
+    thead th.col-avg {
+      text-align: right;
+      padding-right: 14px;
+    }
+
+    /* group dividers in header */
+    thead th.divider-left {
+      border-left: 1px solid rgba(255,255,255,0.25);
+    }
+
+    tbody tr:nth-child(odd)  { background: #fffdf9; }
+    tbody tr:nth-child(even) { background: #f5f1eb; }
+
+    tbody tr:hover { background: #fde8ea; }
+
+    tbody td {
+      padding: 9px 10px;
+      white-space: nowrap;
+    }
+
+    tbody td.col-name {
+      text-align: left;
+      padding-left: 16px;
+      font-weight: normal;
+      color: #1a1a1a;
+    }
+
+    tbody td.col-pos {
+      text-align: left;
+      color: #666;
+      font-size: 0.85rem;
+    }
+
+    tbody td.col-num {
+      text-align: right;
+      color: #333;
+    }
+
+    tbody td.col-avg {
+      text-align: right;
+      padding-right: 14px;
+      font-style: italic;
+      color: #1a1a1a;
+    }
+
+    tbody td.col-ops {
+      text-align: right;
+      padding-right: 14px;
+      font-weight: bold;
+      color: #E81828;
+    }
+
+    tbody td.divider-left {
+      border-left: 1px solid #e8e4dc;
+    }
+
+    tfoot tr {
+      background: #2c1a1c;
+    }
+
+    tfoot td {
+      padding: 10px 16px;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      color: #c9a8ad;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <h1>Philadelphia Phillies &mdash; 2026 Batting Stats</h1>
+    <div class="subtitle">Regular Season</div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-name">Player</th>
+            <th class="col-pos">Pos</th>
+            <th class="col-num">G</th>
+            <th class="col-num">AB</th>
+            <th class="col-num">R</th>
+            <th class="col-num">H</th>
+            <th class="col-num">2B</th>
+            <th class="col-num">3B</th>
+            <th class="col-num">HR</th>
+            <th class="col-num">RBI</th>
+            <th class="col-num divider-left">BB</th>
+            <th class="col-num">SO</th>
+            <th class="col-num">SB</th>
+            <th class="col-num">CS</th>
+            <th class="col-avg divider-left">AVG</th>
+            <th class="col-avg">OBP</th>
+            <th class="col-avg">SLG</th>
+            <th class="col-avg">OPS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-name">Kyle Schwarber</td>
+            <td class="col-pos">DH</td>
+            <td class="col-num">34</td>
+            <td class="col-num">123</td>
+            <td class="col-num">22</td>
+            <td class="col-num">27</td>
+            <td class="col-num">6</td>
+            <td class="col-num">1</td>
+            <td class="col-num">11</td>
+            <td class="col-num">20</td>
+            <td class="col-num divider-left">25</td>
+            <td class="col-num">48</td>
+            <td class="col-num">0</td>
+            <td class="col-num">0</td>
+            <td class="col-avg divider-left">.220</td>
+            <td class="col-avg">.368</td>
+            <td class="col-avg">.553</td>
+            <td class="col-ops">.921</td>
+          </tr>
+          <tr>
+            <td class="col-name">Bryce Harper</td>
+            <td class="col-pos">1B</td>
+            <td class="col-num">34</td>
+            <td class="col-num">125</td>
+            <td class="col-num">18</td>
+            <td class="col-num">32</td>
+            <td class="col-num">8</td>
+            <td class="col-num">1</td>
+            <td class="col-num">6</td>
+            <td class="col-num">19</td>
+            <td class="col-num divider-left">19</td>
+            <td class="col-num">25</td>
+            <td class="col-num">2</td>
+            <td class="col-num">1</td>
+            <td class="col-avg divider-left">.256</td>
+            <td class="col-avg">.352</td>
+            <td class="col-avg">.480</td>
+            <td class="col-ops">.832</td>
+          </tr>
+          <tr>
+            <td class="col-name">Brandon Marsh</td>
+            <td class="col-pos">LF</td>
+            <td class="col-num">30</td>
+            <td class="col-num">106</td>
+            <td class="col-num">16</td>
+            <td class="col-num">33</td>
+            <td class="col-num">7</td>
+            <td class="col-num">0</td>
+            <td class="col-num">4</td>
+            <td class="col-num">18</td>
+            <td class="col-num divider-left">5</td>
+            <td class="col-num">24</td>
+            <td class="col-num">3</td>
+            <td class="col-num">0</td>
+            <td class="col-avg divider-left">.311</td>
+            <td class="col-avg">.342</td>
+            <td class="col-avg">.491</td>
+            <td class="col-ops">.833</td>
+          </tr>
+          <tr>
+            <td class="col-name">Trea Turner</td>
+            <td class="col-pos">SS</td>
+            <td class="col-num">33</td>
+            <td class="col-num">136</td>
+            <td class="col-num">21</td>
+            <td class="col-num">33</td>
+            <td class="col-num">6</td>
+            <td class="col-num">0</td>
+            <td class="col-num">4</td>
+            <td class="col-num">11</td>
+            <td class="col-num divider-left">12</td>
+            <td class="col-num">29</td>
+            <td class="col-num">3</td>
+            <td class="col-num">0</td>
+            <td class="col-avg divider-left">.243</td>
+            <td class="col-avg">.304</td>
+            <td class="col-avg">.375</td>
+            <td class="col-ops">.679</td>
+          </tr>
+          <tr>
+            <td class="col-name">Adolis Garc&#237;a</td>
+            <td class="col-pos">RF</td>
+            <td class="col-num">33</td>
+            <td class="col-num">119</td>
+            <td class="col-num">10</td>
+            <td class="col-num">28</td>
+            <td class="col-num">5</td>
+            <td class="col-num">1</td>
+            <td class="col-num">3</td>
+            <td class="col-num">11</td>
+            <td class="col-num divider-left">11</td>
+            <td class="col-num">34</td>
+            <td class="col-num">1</td>
+            <td class="col-num">0</td>
+            <td class="col-avg divider-left">.235</td>
+            <td class="col-avg">.308</td>
+            <td class="col-avg">.370</td>
+            <td class="col-ops">.678</td>
+          </tr>
+          <tr>
+            <td class="col-name">Bryson Stott</td>
+            <td class="col-pos">2B</td>
+            <td class="col-num">28</td>
+            <td class="col-num">97</td>
+            <td class="col-num">8</td>
+            <td class="col-num">20</td>
+            <td class="col-num">2</td>
+            <td class="col-num">2</td>
+            <td class="col-num">2</td>
+            <td class="col-num">1</td>
+            <td class="col-num divider-left">16</td>
+            <td class="col-num">19</td>
+            <td class="col-num">6</td>
+            <td class="col-num">0</td>
+            <td class="col-avg divider-left">.206</td>
+            <td class="col-avg">.260</td>
+            <td class="col-avg">.330</td>
+            <td class="col-ops">.590</td>
+          </tr>
+          <tr>
+            <td class="col-name">Alec Bohm</td>
+            <td class="col-pos">3B</td>
+            <td class="col-num">32</td>
+            <td class="col-num">117</td>
+            <td class="col-num">7</td>
+            <td class="col-num">19</td>
+            <td class="col-num">3</td>
+            <td class="col-num">0</td>
+            <td class="col-num">1</td>
+            <td class="col-num">15</td>
+            <td class="col-num divider-left">9</td>
+            <td class="col-num">22</td>
+            <td class="col-num">0</td>
+            <td class="col-num">0</td>
+            <td class="col-avg divider-left">.162</td>
+            <td class="col-avg">.229</td>
+            <td class="col-avg">.214</td>
+            <td class="col-ops">.443</td>
+          </tr>
+          <tr>
+            <td class="col-name">Rafael March&#225;n</td>
+            <td class="col-pos">C</td>
+            <td class="col-num">16</td>
+            <td class="col-num">51</td>
+            <td class="col-num">3</td>
+            <td class="col-num">4</td>
+            <td class="col-num">0</td>
+            <td class="col-num">0</td>
+            <td class="col-num">1</td>
+            <td class="col-num">2</td>
+            <td class="col-num divider-left">1</td>
+            <td class="col-num">11</td>
+            <td class="col-num">0</td>
+            <td class="col-num">0</td>
+            <td class="col-avg divider-left">.078</td>
+            <td class="col-avg">.130</td>
+            <td class="col-avg">.137</td>
+            <td class="col-ops">.267</td>
+          </tr>
+          <tr>
+            <td class="col-name">J.T. Realmuto</td>
+            <td class="col-pos">C</td>
+            <td class="col-num">19</td>
+            <td class="col-num">60</td>
+            <td class="col-num">6</td>
+            <td class="col-num">15</td>
+            <td class="col-num">2</td>
+            <td class="col-num">0</td>
+            <td class="col-num">1</td>
+            <td class="col-num">5</td>
+            <td class="col-num divider-left">5</td>
+            <td class="col-num">12</td>
+            <td class="col-num">0</td>
+            <td class="col-num">0</td>
+            <td class="col-avg divider-left">.250</td>
+            <td class="col-avg">.324</td>
+            <td class="col-avg">.333</td>
+            <td class="col-ops">.657</td>
+          </tr>
+          <tr>
+            <td class="col-name">Felix Reyes</td>
+            <td class="col-pos">LF</td>
+            <td class="col-num">8</td>
+            <td class="col-num">28</td>
+            <td class="col-num">2</td>
+            <td class="col-num">4</td>
+            <td class="col-num">1</td>
+            <td class="col-num">0</td>
+            <td class="col-num">1</td>
+            <td class="col-num">1</td>
+            <td class="col-num divider-left">0</td>
+            <td class="col-num">7</td>
+            <td class="col-num">0</td>
+            <td class="col-num">0</td>
+            <td class="col-avg divider-left">.143</td>
+            <td class="col-avg">.143</td>
+            <td class="col-avg">.286</td>
+            <td class="col-ops">.429</td>
+          </tr>
+          <tr>
+            <td class="col-name">Edmundo Sosa</td>
+            <td class="col-pos">2B</td>
+            <td class="col-num">18</td>
+            <td class="col-num">47</td>
+            <td class="col-num">5</td>
+            <td class="col-num">13</td>
+            <td class="col-num">3</td>
+            <td class="col-num">0</td>
+            <td class="col-num">1</td>
+            <td class="col-num">8</td>
+            <td class="col-num divider-left">2</td>
+            <td class="col-num">9</td>
+            <td class="col-num">2</td>
+            <td class="col-num">0</td>
+            <td class="col-avg divider-left">.277</td>
+            <td class="col-avg">.306</td>
+            <td class="col-avg">.404</td>
+            <td class="col-ops">.710</td>
+          </tr>
+          <tr>
+            <td class="col-name">Justin Crawford</td>
+            <td class="col-pos">CF</td>
+            <td class="col-num">29</td>
+            <td class="col-num">97</td>
+            <td class="col-num">8</td>
+            <td class="col-num">26</td>
+            <td class="col-num">6</td>
+            <td class="col-num">2</td>
+            <td class="col-num">0</td>
+            <td class="col-num">7</td>
+            <td class="col-num divider-left">8</td>
+            <td class="col-num">19</td>
+            <td class="col-num">3</td>
+            <td class="col-num">2</td>
+            <td class="col-avg divider-left">.268</td>
+            <td class="col-avg">.336</td>
+            <td class="col-avg">.371</td>
+            <td class="col-ops">.707</td>
+          </tr>
+          <tr>
+            <td class="col-name">Otto Kemp</td>
+            <td class="col-pos">LF</td>
+            <td class="col-num">10</td>
+            <td class="col-num">20</td>
+            <td class="col-num">0</td>
+            <td class="col-num">2</td>
+            <td class="col-num">0</td>
+            <td class="col-num">0</td>
+            <td class="col-num">0</td>
+            <td class="col-num">0</td>
+            <td class="col-num divider-left">1</td>
+            <td class="col-num">9</td>
+            <td class="col-num">0</td>
+            <td class="col-num">0</td>
+            <td class="col-avg divider-left">.100</td>
+            <td class="col-avg">.182</td>
+            <td class="col-avg">.100</td>
+            <td class="col-ops">.282</td>
+          </tr>
+          <tr>
+            <td class="col-name">Dylan Moore</td>
+            <td class="col-pos">UT</td>
+            <td class="col-num">15</td>
+            <td class="col-num">12</td>
+            <td class="col-num">3</td>
+            <td class="col-num">0</td>
+            <td class="col-num">0</td>
+            <td class="col-num">0</td>
+            <td class="col-num">0</td>
+            <td class="col-num">0</td>
+            <td class="col-num divider-left">3</td>
+            <td class="col-num">6</td>
+            <td class="col-num">1</td>
+            <td class="col-num">0</td>
+            <td class="col-avg divider-left">.000</td>
+            <td class="col-avg">.200</td>
+            <td class="col-avg">.000</td>
+            <td class="col-ops">.200</td>
+          </tr>
+          <tr>
+            <td class="col-name">Garrett Stubbs</td>
+            <td class="col-pos">C</td>
+            <td class="col-num">5</td>
+            <td class="col-num">11</td>
+            <td class="col-num">2</td>
+            <td class="col-num">3</td>
+            <td class="col-num">0</td>
+            <td class="col-num">0</td>
+            <td class="col-num">0</td>
+            <td class="col-num">1</td>
+            <td class="col-num divider-left">1</td>
+            <td class="col-num">1</td>
+            <td class="col-num">0</td>
+            <td class="col-num">0</td>
+            <td class="col-avg divider-left">.273</td>
+            <td class="col-avg">.308</td>
+            <td class="col-avg">.273</td>
+            <td class="col-ops">.581</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="18">Stats as of April 26, 2026</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+  </div>
+</body>
+</html>
