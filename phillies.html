@@ -146,6 +146,32 @@
       color: #c9a8ad;
       text-align: right;
     }
+
+    .last-updated {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #aaa;
+      font-style: italic;
+      margin-top: -24px;
+      margin-bottom: 28px;
+    }
+
+    thead th {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    thead th:hover {
+      background: #c9111e;
+    }
+
+    .sort-arrow {
+      display: inline-block;
+      margin-left: 4px;
+      font-size: 0.65rem;
+      vertical-align: middle;
+      opacity: 0.85;
+    }
   </style>
 </head>
 <body>
@@ -153,29 +179,30 @@
 
     <h1>Philadelphia Phillies &mdash; 2026 Batting Stats</h1>
     <div class="subtitle">Regular Season</div>
+    <div class="last-updated">Last updated: May 3, 2026</div>
 
     <div class="table-wrapper">
       <table>
         <thead>
           <tr>
-            <th class="col-name">Player</th>
-            <th class="col-pos">Pos</th>
-            <th class="col-num">G</th>
-            <th class="col-num">AB</th>
-            <th class="col-num">R</th>
-            <th class="col-num">H</th>
-            <th class="col-num">2B</th>
-            <th class="col-num">3B</th>
-            <th class="col-num">HR</th>
-            <th class="col-num">RBI</th>
-            <th class="col-num divider-left">BB</th>
-            <th class="col-num">SO</th>
-            <th class="col-num">SB</th>
-            <th class="col-num">CS</th>
-            <th class="col-avg divider-left">AVG</th>
-            <th class="col-avg">OBP</th>
-            <th class="col-avg">SLG</th>
-            <th class="col-avg">OPS</th>
+            <th class="col-name" data-col="0">Player<span class="sort-arrow"></span></th>
+            <th class="col-pos" data-col="1">Pos<span class="sort-arrow"></span></th>
+            <th class="col-num" data-col="2">G<span class="sort-arrow"></span></th>
+            <th class="col-num" data-col="3">AB<span class="sort-arrow"></span></th>
+            <th class="col-num" data-col="4">R<span class="sort-arrow"></span></th>
+            <th class="col-num" data-col="5">H<span class="sort-arrow"></span></th>
+            <th class="col-num" data-col="6">2B<span class="sort-arrow"></span></th>
+            <th class="col-num" data-col="7">3B<span class="sort-arrow"></span></th>
+            <th class="col-num" data-col="8">HR<span class="sort-arrow"></span></th>
+            <th class="col-num" data-col="9">RBI<span class="sort-arrow"></span></th>
+            <th class="col-num divider-left" data-col="10">BB<span class="sort-arrow"></span></th>
+            <th class="col-num" data-col="11">SO<span class="sort-arrow"></span></th>
+            <th class="col-num" data-col="12">SB<span class="sort-arrow"></span></th>
+            <th class="col-num" data-col="13">CS<span class="sort-arrow"></span></th>
+            <th class="col-avg divider-left" data-col="14">AVG<span class="sort-arrow"></span></th>
+            <th class="col-avg" data-col="15">OBP<span class="sort-arrow"></span></th>
+            <th class="col-avg" data-col="16">SLG<span class="sort-arrow"></span></th>
+            <th class="col-avg" data-col="17">OPS<span class="sort-arrow"></span></th>
           </tr>
         </thead>
         <tbody>
@@ -482,12 +509,72 @@
         </tbody>
         <tfoot>
           <tr>
-            <td colspan="18">Stats as of April 26, 2026</td>
+            <td colspan="18">2026 Philadelphia Phillies</td>
           </tr>
         </tfoot>
       </table>
     </div>
 
   </div>
+
+  <script>
+    (function () {
+      const tbody = document.querySelector('tbody');
+      const headers = document.querySelectorAll('thead th[data-col]');
+
+      // stamp original order so we can restore it
+      Array.from(tbody.rows).forEach((tr, i) => tr.dataset.orig = i);
+
+      // columns 0-1 are text; 2-13 integer; 14-17 decimal stat
+      function cellValue(tr, col) {
+        const text = tr.cells[col].textContent.trim();
+        if (col >= 2 && col <= 13) return parseInt(text, 10);
+        if (col >= 14) return parseFloat(text.replace(/^\./, '0.'));
+        return text.toLowerCase();
+      }
+
+      let sortCol = -1;
+      let sortDir = 'asc';
+
+      function applySort(col) {
+        if (col === sortCol) {
+          sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          sortCol = col;
+          sortDir = 'asc';
+        }
+
+        const rows = Array.from(tbody.rows);
+
+        rows.sort((a, b) => {
+          const av = cellValue(a, col);
+          const bv = cellValue(b, col);
+          let cmp;
+          if (typeof av === 'number') {
+            cmp = av - bv;
+          } else {
+            cmp = av < bv ? -1 : av > bv ? 1 : 0;
+          }
+          return sortDir === 'asc' ? cmp : -cmp;
+        });
+
+        rows.forEach(tr => tbody.appendChild(tr));
+
+        headers.forEach(th => {
+          const arrow = th.querySelector('.sort-arrow');
+          const thCol = parseInt(th.dataset.col, 10);
+          if (thCol === sortCol) {
+            arrow.textContent = sortDir === 'asc' ? ' ▲' : ' ▼';
+          } else {
+            arrow.textContent = '';
+          }
+        });
+      }
+
+      headers.forEach(th => {
+        th.addEventListener('click', () => applySort(parseInt(th.dataset.col, 10)));
+      });
+    })();
+  </script>
 </body>
 </html>
