@@ -197,10 +197,48 @@
       transition: width 0.4s ease;
     }
 
+    .gen-filter {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin-top: 24px;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .gen-filter label {
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #bbb;
+    }
+
+    .gen-select {
+      width: 100%;
+      padding: 10px 14px;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 0.88rem;
+      color: #2c2c2c;
+      background: #fff;
+      border: 1px solid #e0dbd2;
+      border-radius: 8px;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23bbb' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .gen-select:hover { border-color: #c9b99a; }
+    .gen-select:focus { outline: none; border-color: #c9b99a; box-shadow: 0 0 0 3px rgba(201,185,154,0.18); }
+
     .buttons {
       display: flex;
       gap: 10px;
-      margin-top: 28px;
+      margin-top: 12px;
       flex-wrap: wrap;
       justify-content: center;
     }
@@ -263,7 +301,7 @@
 <body>
 
   <h1 class="page-title">Pokémon Explorer</h1>
-  <p class="page-subtitle">Original 151</p>
+  <p class="page-subtitle">All Generations &mdash; 1,025 Pokémon</p>
 
   <div class="card" id="card">
     <div class="pokemon-id" id="pokemon-id"></div>
@@ -288,6 +326,22 @@
       <div id="stats-list"></div>
     </div>
     <div class="error-msg" id="error-msg" style="display:none"></div>
+  </div>
+
+  <div class="gen-filter">
+    <label for="gen-select">Generation</label>
+    <select class="gen-select" id="gen-select">
+      <option value="all">All Generations (1–1025)</option>
+      <option value="gen1">Gen 1 — Kanto (1–151)</option>
+      <option value="gen2">Gen 2 — Johto (152–251)</option>
+      <option value="gen3">Gen 3 — Hoenn (252–386)</option>
+      <option value="gen4">Gen 4 — Sinnoh (387–493)</option>
+      <option value="gen5">Gen 5 — Unova (494–649)</option>
+      <option value="gen6">Gen 6 — Kalos (650–721)</option>
+      <option value="gen7">Gen 7 — Alola (722–809)</option>
+      <option value="gen8">Gen 8 — Galar (810–905)</option>
+      <option value="gen9">Gen 9 — Paldea (906–1025)</option>
+    </select>
   </div>
 
   <div class="buttons">
@@ -419,7 +473,8 @@
 
     function fetchRandom() {
       setLoading();
-      const id = Math.floor(Math.random() * 151) + 1;
+      const [min, max] = getRange();
+      const id = Math.floor(Math.random() * (max - min + 1)) + min;
       fetch('https://pokeapi.co/api/v2/pokemon/' + id)
         .then(function (res) {
           if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -429,6 +484,24 @@
         .catch(function () {
           showError("Couldn't load Pokémon, try again.");
         });
+    }
+
+    const GEN_RANGES = {
+      all:  [1, 1025],
+      gen1: [1, 151],
+      gen2: [152, 251],
+      gen3: [252, 386],
+      gen4: [387, 493],
+      gen5: [494, 649],
+      gen6: [650, 721],
+      gen7: [722, 809],
+      gen8: [810, 905],
+      gen9: [906, 1025],
+    };
+
+    function getRange() {
+      const val = document.getElementById('gen-select').value;
+      return GEN_RANGES[val] || GEN_RANGES.all;
     }
 
     document.getElementById('btn-random').addEventListener('click', fetchRandom);
