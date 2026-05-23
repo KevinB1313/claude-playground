@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>China History — Five Thousand Years of Civilization</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: #f7f5f0;
+      color: #2c2c2c;
+      min-height: 100vh;
+      padding: 0 0 80px;
+    }
+
+    /* ── Navigation ── */
+    .nav {
+      padding: 18px 32px;
+      border-bottom: 1px solid #e8e4dc;
+      background: #f7f5f0;
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: #C41E3A;
+      font-size: 0.9rem;
+      letter-spacing: 0.01em;
+      transition: opacity 0.15s;
+    }
+
+    .nav a:hover { opacity: 0.7; }
+
+    /* ── Page header ── */
+    header {
+      text-align: center;
+      padding: 56px 24px 48px;
+    }
+
+    header h1 {
+      font-size: 3rem;
+      font-weight: normal;
+      color: #1a1a1a;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+
+    header p {
+      font-size: 1.05rem;
+      color: #888;
+      font-style: italic;
+      letter-spacing: 0.03em;
+      margin-bottom: 18px;
+    }
+
+    .header-underline {
+      width: 80px;
+      height: 3px;
+      background: #C41E3A;
+      margin: 0 auto;
+      border-radius: 2px;
+    }
+
+    /* ── Section label ── */
+    .section-label {
+      text-align: center;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 28px;
+    }
+
+    /* ── Dynasty grid ── */
+    .dynasty-section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 56px;
+    }
+
+    .dynasty-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .dynasty-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 24px 22px 22px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      border-left: 5px solid #ccc;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      user-select: none;
+    }
+
+    .dynasty-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.11);
+    }
+
+    .dynasty-card:active {
+      transform: translateY(-1px);
+    }
+
+    .dynasty-card .era-icon {
+      font-size: 1.8rem;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .dynasty-card .era-name {
+      font-size: 1.05rem;
+      color: #1a1a1a;
+      margin-bottom: 3px;
+    }
+
+    .dynasty-card .era-dates {
+      font-size: 0.78rem;
+      color: #aaa;
+      letter-spacing: 0.04em;
+      margin-bottom: 10px;
+      font-style: italic;
+    }
+
+    .dynasty-card .era-desc {
+      font-size: 0.88rem;
+      color: #666;
+      line-height: 1.65;
+    }
+
+    .dynasty-card .ask-hint {
+      margin-top: 12px;
+      font-size: 0.75rem;
+      color: #C41E3A;
+      opacity: 0;
+      transition: opacity 0.15s;
+      font-style: italic;
+    }
+
+    .dynasty-card:hover .ask-hint { opacity: 1; }
+
+    /* Border colors per era */
+    .border-gold    { border-left-color: #B8960C; }
+    .border-red     { border-left-color: #8B1A1A; }
+    .border-jade    { border-left-color: #2E6B4F; }
+    .border-blue    { border-left-color: #1B3A6B; }
+    .border-purple  { border-left-color: #4A1B6B; }
+    .border-crimson { border-left-color: #C41E3A; }
+
+    /* ── Divider ── */
+    .divider {
+      max-width: 1100px;
+      margin: 0 auto 48px;
+      padding: 0 24px;
+    }
+
+    .divider hr {
+      border: none;
+      border-top: 1px solid #e0dbd0;
+    }
+
+    /* ── Chat section ── */
+    .chat-section {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .chat-panel {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+      overflow: hidden;
+    }
+
+    .chat-header {
+      background: #1a1a1a;
+      color: #fff;
+      padding: 22px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-header-left h2 {
+      font-size: 1.25rem;
+      font-weight: normal;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .chat-header-left p {
+      font-size: 0.8rem;
+      color: #bbb;
+      font-style: italic;
+    }
+
+    .btn-clear {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #ccc;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-family: Georgia, serif;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn-clear:hover {
+      border-color: rgba(255,255,255,0.6);
+      color: #fff;
+    }
+
+    /* ── Messages ── */
+    .messages {
+      height: 420px;
+      overflow-y: auto;
+      padding: 24px 24px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      scroll-behavior: smooth;
+    }
+
+    .message {
+      display: flex;
+      flex-direction: column;
+      max-width: 82%;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+
+    .message.assistant {
+      align-self: flex-start;
+      align-items: flex-start;
+    }
+
+    .message-bubble {
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.93rem;
+      line-height: 1.65;
+    }
+
+    .message.user .message-bubble {
+      background: #f0ebe0;
+      color: #2c2c2c;
+      border-bottom-right-radius: 3px;
+    }
+
+    .message.assistant .message-bubble {
+      background: #fff;
+      color: #2c2c2c;
+      border-left: 3px solid #C41E3A;
+      border-bottom-left-radius: 3px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+
+    .typing-indicator .message-bubble {
+      color: #999;
+      font-style: italic;
+    }
+
+    /* ── Input area ── */
+    .chat-input-area {
+      border-top: 1px solid #f0ebe0;
+      padding: 16px 20px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .chat-input {
+      flex: 1;
+      resize: none;
+      border: 1px solid #e0dbd0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: Georgia, serif;
+      font-size: 0.92rem;
+      color: #2c2c2c;
+      background: #fdfbf7;
+      outline: none;
+      transition: border-color 0.15s;
+      line-height: 1.5;
+      min-height: 44px;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .chat-input:focus {
+      border-color: #C41E3A;
+    }
+
+    .chat-input::placeholder {
+      color: #bbb;
+      font-style: italic;
+    }
+
+    .btn-send {
+      background: #C41E3A;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-family: Georgia, serif;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+      white-space: nowrap;
+      height: 44px;
+    }
+
+    .btn-send:hover { background: #a01830; }
+    .btn-send:disabled { opacity: 0.45; cursor: default; }
+
+    /* ── Scrollbar ── */
+    .messages::-webkit-scrollbar { width: 5px; }
+    .messages::-webkit-scrollbar-track { background: transparent; }
+    .messages::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 860px) {
+      .dynasty-grid { grid-template-columns: repeat(2, 1fr); }
+      header h1 { font-size: 2.2rem; }
+    }
+
+    @media (max-width: 560px) {
+      .dynasty-grid { grid-template-columns: 1fr; }
+      header h1 { font-size: 1.8rem; }
+      .chat-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .messages { height: 340px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="index.html">← Back to Kevin's Projects</a>
+  </nav>
+
+  <header>
+    <h1>China History</h1>
+    <p>Five Thousand Years of Civilization</p>
+    <div class="header-underline"></div>
+  </header>
+
+  <!-- ── Dynasty Timeline ── -->
+  <section class="dynasty-section">
+    <p class="section-label">Dynasty Timeline — Click any era to ask the historian</p>
+
+    <div class="dynasty-grid">
+
+      <div class="dynasty-card border-gold" data-question="Tell me about Ancient China — the Xia, Shang, and Zhou dynasties. What were oracle bones, and how did Confucius and Laozi shape Chinese thought?">
+        <div class="era-icon">🏺</div>
+        <div class="era-name">Ancient China</div>
+        <div class="era-dates">2100–221 BCE</div>
+        <div class="era-desc">The foundational era of the Xia, Shang, and Zhou dynasties gave the world oracle bones, magnificent bronze culture, and the Mandate of Heaven. This period saw Confucius, Laozi, and the flowering of the Hundred Schools of Thought — philosophy that would shape all of East Asia.</div>
+        <div class="ask-hint">Click to ask about this era →</div>
+      </div>
+
+      <div class="dynasty-card border-red" data-question="Tell me about the Qin dynasty and Qin Shi Huang's unification of China — the Great Wall, the Terracotta Army, and how he standardized writing and currency.">
+        <div class="era-icon">⚔️</div>
+        <div class="era-name">Imperial Unification</div>
+        <div class="era-dates">221–206 BCE</div>
+        <div class="era-desc">Qin Shi Huang ended four centuries of warring states and forged the first unified Chinese empire in just 15 years. His legacy is monumental — the Great Wall, the awe-inspiring Terracotta Army, and sweeping standardizations of writing, weights, and currency that bound a fractured land into one civilization.</div>
+        <div class="ask-hint">Click to ask about this era →</div>
+      </div>
+
+      <div class="dynasty-card border-jade" data-question="Tell me about the Han and Tang golden ages — the Silk Road, Buddhism's arrival, Tang poetry, Wu Zetian, and Chang'an as the world's greatest city.">
+        <div class="era-icon">🌸</div>
+        <div class="era-name">Han &amp; Tang Golden Ages</div>
+        <div class="era-dates">206 BCE–907 CE</div>
+        <div class="era-desc">The Han dynasty established the Silk Road and Confucianism as state ideology, while Tang China became the most cosmopolitan civilization on earth. Chang'an, the Tang capital, was the world's largest city. Buddhism transformed Chinese spirituality, Tang poetry reached sublime heights, and Wu Zetian became China's only female emperor.</div>
+        <div class="ask-hint">Click to ask about this era →</div>
+      </div>
+
+      <div class="dynasty-card border-blue" data-question="Tell me about the Song, Yuan, and Ming dynasties — China's Four Great Inventions, the Mongol conquest under Kublai Khan, Zheng He's voyages, and the Forbidden City.">
+        <div class="era-icon">🎨</div>
+        <div class="era-name">Song, Yuan &amp; Ming</div>
+        <div class="era-dates">960–1644 CE</div>
+        <div class="era-desc">Song China gave the world printing, gunpowder, the compass, and paper money — the Four Great Inventions that transformed global history. The Mongol Yuan dynasty brought China into a vast Eurasian empire. Ming China then reasserted its grandeur with Zheng He's oceanic expeditions and the construction of the magnificent Forbidden City.</div>
+        <div class="ask-hint">Click to ask about this era →</div>
+      </div>
+
+      <div class="dynasty-card border-purple" data-question="Tell me about the Qing dynasty — China's last imperial dynasty. How did it reach its peak territory, and what led to its decline through the Opium Wars, treaty ports, and eventual fall in 1912?">
+        <div class="era-icon">🐉</div>
+        <div class="era-name">Qing Dynasty</div>
+        <div class="era-dates">1644–1912 CE</div>
+        <div class="era-desc">The Manchu-founded Qing dynasty expanded China to its greatest territorial extent, ruling over 400 million people at its peak. Yet the 19th century brought devastating humiliation — the Opium Wars forced open treaty ports, foreign powers carved out spheres of influence, and a crumbling imperial system finally collapsed in 1912.</div>
+        <div class="ask-hint">Click to ask about this era →</div>
+      </div>
+
+      <div class="dynasty-card border-crimson" data-question="Tell me about Modern China — from the Republic of 1912, through the Communist Revolution of 1949 and Cultural Revolution, to Deng Xiaoping's reforms and China's rise as a global power.">
+        <div class="era-icon">🌟</div>
+        <div class="era-name">Modern China</div>
+        <div class="era-dates">1912–present</div>
+        <div class="era-desc">After imperial collapse, China endured the Republic, warlord chaos, and brutal Japanese invasion before Mao Zedong's Communist Revolution in 1949. The Cultural Revolution tore society apart. Then Deng Xiaoping's pragmatic reforms launched the most rapid economic rise in human history, transforming China into a 21st-century superpower.</div>
+        <div class="ask-hint">Click to ask about this era →</div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"><hr /></div>
+
+  <!-- ── Chat section ── -->
+  <section class="chat-section">
+    <p class="section-label">AI Historian — Powered by Claude</p>
+
+    <div class="chat-panel">
+      <div class="chat-header">
+        <div class="chat-header-left">
+          <h2>Ask a Historian</h2>
+          <p>Powered by Claude — ask anything about Chinese history</p>
+        </div>
+        <button class="btn-clear" id="clearBtn">Clear conversation</button>
+      </div>
+
+      <div class="messages" id="messages"></div>
+
+      <div class="chat-input-area">
+        <textarea
+          class="chat-input"
+          id="chatInput"
+          placeholder="Ask about any dynasty, event, or figure…"
+          rows="1"
+        ></textarea>
+        <button class="btn-send" id="sendBtn">Send</button>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const ANTHROPIC_API_KEY = 'YOUR_API_KEY_HERE';
+
+    const SYSTEM_PROMPT = `You are a distinguished scholar of Chinese history with expertise spanning 5,000 years — from the ancient Xia dynasty through modern China. Your knowledge is deep and comprehensive across all eras, with particular strength in:
+
+- Imperial dynasties and their political structures
+- Chinese philosophy (Confucianism, Taoism, Legalism, Buddhism)
+- Military history, strategy, and key battles
+- Cultural achievements: art, poetry, architecture, science, technology
+- Economic history: the Silk Road, trade, agriculture, industry
+- Social history: the examination system, family structure, gender roles
+- Modern China: the Republican period, Communist Revolution, reform era, contemporary developments
+
+Your tone is academic and scholarly — precise, detailed, and authoritative. You cite specific dates, names, and sources where relevant. You draw connections across different periods and explain causality. When discussing contested historical interpretations, you acknowledge multiple scholarly perspectives. You occasionally use relevant Chinese terms (with translations) to add authenticity.
+
+You are passionate about helping people understand China's extraordinary history and its relevance to the modern world. Keep responses focused and substantive — typically 150-300 words per response, longer for complex topics.`;
+
+    const WELCOME_MESSAGE = '你好！I\'m your Chinese history scholar. I can discuss any aspect of China\'s 5,000-year history — from ancient oracle bones to modern geopolitics. What would you like to explore?';
+
+    let conversationHistory = [];
+    let isLoading = false;
+
+    const messagesEl = document.getElementById('messages');
+    const chatInput  = document.getElementById('chatInput');
+    const sendBtn    = document.getElementById('sendBtn');
+    const clearBtn   = document.getElementById('clearBtn');
+
+    function addMessage(role, text, isTyping = false) {
+      const wrapper = document.createElement('div');
+      wrapper.className = `message ${role}${isTyping ? ' typing-indicator' : ''}`;
+
+      const bubble = document.createElement('div');
+      bubble.className = 'message-bubble';
+      bubble.textContent = text;
+
+      wrapper.appendChild(bubble);
+      messagesEl.appendChild(wrapper);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      return wrapper;
+    }
+
+    function removeElement(el) {
+      if (el && el.parentNode) el.parentNode.removeChild(el);
+    }
+
+    function setLoading(loading) {
+      isLoading = loading;
+      sendBtn.disabled = loading;
+      chatInput.disabled = loading;
+    }
+
+    async function sendMessage(userText) {
+      if (!userText.trim() || isLoading) return;
+
+      addMessage('user', userText);
+      conversationHistory.push({ role: 'user', content: userText });
+      chatInput.value = '';
+      autoResize();
+
+      setLoading(true);
+      const typingEl = addMessage('assistant', 'Scholar is thinking…', true);
+
+      try {
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': ANTHROPIC_API_KEY,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true',
+          },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-6',
+            max_tokens: 1024,
+            system: SYSTEM_PROMPT,
+            messages: conversationHistory,
+          }),
+        });
+
+        removeElement(typingEl);
+
+        if (!response.ok) {
+          throw new Error(`API error ${response.status}`);
+        }
+
+        const data = await response.json();
+        const replyText = data.content[0].text;
+        addMessage('assistant', replyText);
+        conversationHistory.push({ role: 'assistant', content: replyText });
+
+      } catch (err) {
+        removeElement(typingEl);
+        addMessage('assistant', 'I apologize — something went wrong. Please try again.');
+        conversationHistory.pop();
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function autoResize() {
+      chatInput.style.height = 'auto';
+      chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
+    }
+
+    function initWelcome() {
+      messagesEl.innerHTML = '';
+      conversationHistory = [];
+      addMessage('assistant', WELCOME_MESSAGE);
+    }
+
+    // Send button
+    sendBtn.addEventListener('click', () => sendMessage(chatInput.value));
+
+    // Enter to send (Shift+Enter = newline)
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage(chatInput.value);
+      }
+    });
+
+    // Auto-resize textarea
+    chatInput.addEventListener('input', autoResize);
+
+    // Clear button
+    clearBtn.addEventListener('click', initWelcome);
+
+    // Dynasty cards → pre-fill chat
+    document.querySelectorAll('.dynasty-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const question = card.dataset.question;
+        chatInput.value = question;
+        autoResize();
+        chatInput.focus();
+        // Scroll to chat
+        document.querySelector('.chat-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // Init on load
+    initWelcome();
+  </script>
+</body>
+</html>
