@@ -269,6 +269,59 @@
       font-style: italic;
     }
 
+    /* ── Live agent status ── */
+    .agent-status {
+      font-style: italic;
+      color: #888;
+    }
+
+    /* ── Rendered markdown inside assistant bubbles ── */
+    .message-bubble h2 {
+      font-size: 1.1rem;
+      font-weight: normal;
+      color: #1a1a1a;
+      margin: 10px 0 6px;
+    }
+
+    .message-bubble h3 {
+      font-size: 1rem;
+      font-weight: normal;
+      color: #1a1a1a;
+      margin: 8px 0 4px;
+    }
+
+    .message-bubble p { margin: 0 0 8px; }
+    .message-bubble p:last-child { margin-bottom: 0; }
+
+    .message-bubble hr {
+      border: none;
+      border-top: 1px solid #e0dbd0;
+      margin: 10px 0;
+    }
+
+    /* ── Sources footer ── */
+    .sources {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #f0ebe0;
+      font-size: 0.78rem;
+      color: #999;
+    }
+
+    .sources .sources-label {
+      font-style: italic;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .sources a {
+      color: #a07a3a;
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .sources a:hover { text-decoration: underline; }
+
     /* ── Input area ── */
     .chat-input-area {
       border-top: 1px solid #f0ebe0;
@@ -456,6 +509,8 @@ You are passionate about helping people understand China's extraordinary history
 
     const WELCOME_MESSAGE = '你好！I\'m your Chinese history scholar. I can discuss any aspect of China\'s 5,000-year history — from ancient oracle bones to modern geopolitics. What would you like to explore?';
 
+    const WORKER_URL = 'https://claude-proxy.kevinbyrd580.workers.dev';
+
     let conversationHistory = [];
     let isLoading = false;
 
@@ -478,57 +533,233 @@ You are passionate about helping people understand China's extraordinary history
       return wrapper;
     }
 
-    function removeElement(el) {
-      if (el && el.parentNode) el.parentNode.removeChild(el);
-    }
-
     function setLoading(loading) {
       isLoading = loading;
       sendBtn.disabled = loading;
       chatInput.disabled = loading;
     }
 
+    /* ── Markdown rendering ── */
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    // Inline: bold BEFORE italic so ** isn't eaten by the * rule.
+    function inlineMarkdown(str) {
+      return str
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    }
+
+    function markdownToHtml(md) {
+      const lines = escapeHtml(md).split('\n');
+      const html = [];
+      let para = [];
+
+      const flushPara = () => {
+        if (para.length) {
+          html.push('<p>' + para.join('<br>') + '</p>');
+          para = [];
+        }
+      };
+
+      for (const raw of lines) {
+        const line = raw.trim();
+        if (line === '') { flushPara(); continue; }
+        if (line === '---' || line === '***' || line === '___') {
+          flushPara();
+          html.push('<hr>');
+          continue;
+        }
+        if (/^##\s+/.test(line)) {
+          flushPara();
+          html.push('<h3>' + inlineMarkdown(line.replace(/^##\s+/, '')) + '</h3>');
+          continue;
+        }
+        if (/^#\s+/.test(line)) {
+          flushPara();
+          html.push('<h2>' + inlineMarkdown(line.replace(/^#\s+/, '')) + '</h2>');
+          continue;
+        }
+        para.push(inlineMarkdown(line));
+      }
+      flushPara();
+      return html.join('');
+    }
+
+    // Render the final answer (with optional Sources footer) into a bubble.
+    function renderFinalAnswer(bubble, text) {
+      const lines = text.split('\n');
+      const srcIdx = lines.findIndex(l => /^\s*sources:/i.test(l));
+
+      let mainText = text;
+      let sourcesBlock = null;
+      if (srcIdx !== -1) {
+        mainText = lines.slice(0, srcIdx).join('\n');
+        sourcesBlock = lines.slice(srcIdx).join('\n');
+      }
+
+      bubble.innerHTML = markdownToHtml(mainText);
+
+      if (sourcesBlock) {
+        const urls = sourcesBlock.match(/https?:\/\/[^\s)<>"']+/g) || [];
+        if (urls.length) {
+          const sources = document.createElement('div');
+          sources.className = 'sources';
+          const label = document.createElement('span');
+          label.className = 'sources-label';
+          label.textContent = 'Sources';
+          sources.appendChild(label);
+          urls.forEach(url => {
+            const a = document.createElement('a');
+            a.href = url;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            a.textContent = url;
+            sources.appendChild(a);
+            sources.appendChild(document.createElement('br'));
+          });
+          bubble.appendChild(sources);
+        }
+      }
+    }
+
+    // Parse one raw SSE event block ("event: x\ndata: {...}") into { event, data }.
+    function parseSSEEvent(block) {
+      let eventType = null;
+      let dataStr = '';
+      for (const line of block.split('\n')) {
+        if (line.startsWith('event:')) {
+          eventType = line.slice(6).trim();
+        } else if (line.startsWith('data:')) {
+          dataStr += line.slice(5).trim();
+        }
+      }
+      if (!eventType) return null;
+      let data = {};
+      if (dataStr) {
+        try { data = JSON.parse(dataStr); } catch (e) { /* ignore malformed */ }
+      }
+      return { event: eventType, data };
+    }
+
     async function sendMessage(userText) {
       if (!userText.trim() || isLoading) return;
 
       addMessage('user', userText);
+      // history = everything BEFORE this question; current question sent separately.
+      const history = conversationHistory.slice();
       conversationHistory.push({ role: 'user', content: userText });
       chatInput.value = '';
       autoResize();
 
       setLoading(true);
-      const typingEl = addMessage('assistant', 'Scholar is thinking…', true);
+
+      // Single assistant bubble that starts as a live status indicator.
+      const wrapper = document.createElement('div');
+      wrapper.className = 'message assistant';
+      const bubble = document.createElement('div');
+      bubble.className = 'message-bubble';
+      const status = document.createElement('div');
+      status.className = 'agent-status';
+      status.textContent = '🎯 Master is planning…';
+      bubble.appendChild(status);
+      wrapper.appendChild(bubble);
+      messagesEl.appendChild(wrapper);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+
+      let finalText = null;
+      let errorShown = false;
+
+      const handleEvent = (block) => {
+        const parsed = parseSSEEvent(block);
+        if (!parsed) return;
+        const { event, data } = parsed;
+
+        switch (event) {
+          case 'status':
+            if (data.message) status.textContent = data.message;
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+            break;
+          case 'plan':
+            console.log('[plan]', data);
+            break;
+          case 'researcher_done':
+            console.log('[researcher_done]', data);
+            break;
+          case 'scholar_done':
+            console.log('[scholar_done]', data);
+            break;
+          case 'final_answer':
+            finalText = data.text || '';
+            renderFinalAnswer(bubble, finalText);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+            break;
+          case 'error':
+            errorShown = true;
+            bubble.innerHTML = '';
+            bubble.textContent = data.message
+              ? `I apologize — ${data.message}`
+              : 'I apologize — something went wrong. Please try again.';
+            break;
+          case 'done':
+          default:
+            break;
+        }
+      };
 
       try {
-        const response = await fetch('https://claude-proxy.kevinbyrd580.workers.dev', {
+        const response = await fetch(WORKER_URL, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'anthropic-version': '2023-06-01',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            model: 'claude-sonnet-4-6',
-            max_tokens: 1024,
-            system: SYSTEM_PROMPT,
-            messages: conversationHistory,
+            mode: 'multi_agent',
+            question: userText,
+            history: history,
           }),
         });
 
-        removeElement(typingEl);
-
-        if (!response.ok) {
+        if (!response.ok || !response.body) {
           throw new Error(`API error ${response.status}`);
         }
 
-        const data = await response.json();
-        const replyText = data.content[0].text;
-        addMessage('assistant', replyText);
-        conversationHistory.push({ role: 'assistant', content: replyText });
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
 
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+
+          // Split on blank lines to isolate complete SSE events.
+          let sep;
+          while ((sep = buffer.indexOf('\n\n')) !== -1) {
+            const block = buffer.slice(0, sep);
+            buffer = buffer.slice(sep + 2);
+            if (block.trim()) handleEvent(block);
+          }
+        }
+        // Flush any trailing event left in the buffer.
+        if (buffer.trim()) handleEvent(buffer);
+
+        if (finalText !== null) {
+          conversationHistory.push({ role: 'assistant', content: finalText });
+        } else {
+          // No answer produced — drop the user turn so history stays clean.
+          conversationHistory.pop();
+          if (!errorShown) {
+            bubble.innerHTML = '';
+            bubble.textContent = 'I apologize — something went wrong. Please try again.';
+          }
+        }
       } catch (err) {
-        removeElement(typingEl);
-        addMessage('assistant', 'I apologize — something went wrong. Please try again.');
         conversationHistory.pop();
+        bubble.innerHTML = '';
+        bubble.textContent = 'I apologize — something went wrong. Please try again.';
         console.error(err);
       } finally {
         setLoading(false);
