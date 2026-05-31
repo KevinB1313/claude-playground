@@ -275,6 +275,42 @@
       color: #888;
     }
 
+    /* ── Parallel worker status list ── */
+    .worker-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .worker-line {
+      padding-left: 14px;
+      font-style: italic;
+      color: #888;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      transition: color 0.3s ease, opacity 0.3s ease;
+    }
+
+    .worker-line.done {
+      color: #aaa;
+      opacity: 0.85;
+    }
+
+    .worker-line.error {
+      color: #C41E3A;
+      opacity: 1;
+    }
+
+    .master-line {
+      padding-left: 14px;
+      margin-top: 6px;
+      font-style: italic;
+      color: #888;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      transition: color 0.3s ease, opacity 0.3s ease;
+    }
+
     /* ── Rendered markdown inside assistant bubbles ── */
     .message-bubble h2 {
       font-size: 1.1rem;
@@ -674,6 +710,12 @@ You are passionate about helping people understand China's extraordinary history
       let finalText = null;
       let errorShown = false;
 
+      // Parallel-worker UI state.
+      let workersStarted = false;
+      let workerList = null;            // container <div> for the worker lines
+      const workerEls = new Map();      // id → { el, label }
+      let masterLine = null;
+
       const handleEvent = (block) => {
         const parsed = parseSSEEvent(block);
         if (!parsed) return;
@@ -681,18 +723,58 @@ You are passionate about helping people understand China's extraordinary history
 
         switch (event) {
           case 'status':
-            if (data.message) status.textContent = data.message;
+            if (workersStarted) {
+              // Workers are running/finished — this announces Master synthesizing.
+              if (!masterLine) {
+                masterLine = document.createElement('div');
+                masterLine.className = 'master-line';
+                bubble.appendChild(masterLine);
+              }
+              masterLine.textContent = data.message || '🎯 Master is synthesizing the answer…';
+            } else if (data.message) {
+              status.textContent = data.message;
+            }
             messagesEl.scrollTop = messagesEl.scrollHeight;
             break;
           case 'plan':
             console.log('[plan]', data);
             break;
-          case 'researcher_done':
-            console.log('[researcher_done]', data);
+          case 'workers_starting': {
+            workersStarted = true;
+            // Replace the single planning line with a stacked list of workers.
+            bubble.innerHTML = '';
+            workerList = document.createElement('div');
+            workerList.className = 'worker-list';
+            bubble.appendChild(workerList);
+            (data.workers || []).forEach(w => {
+              const line = document.createElement('div');
+              line.className = 'worker-line';
+              line.textContent = w.label || w.id;
+              workerList.appendChild(line);
+              workerEls.set(w.id, { el: line, label: w.label || w.id });
+            });
+            messagesEl.scrollTop = messagesEl.scrollHeight;
             break;
-          case 'scholar_done':
-            console.log('[scholar_done]', data);
+          }
+          case 'worker_done': {
+            const entry = workerEls.get(data.id);
+            if (entry) {
+              entry.el.className = 'worker-line done';
+              entry.el.textContent = '✓ ' + entry.label;
+            }
+            console.log('[worker_done]', data);
             break;
+          }
+          case 'worker_error': {
+            const entry = workerEls.get(data.id);
+            if (entry) {
+              entry.el.className = 'worker-line error';
+              entry.el.textContent = '⚠️ ' + entry.label;
+            }
+            console.warn('[worker_error]', data);
+            // Do not abort — other workers may still complete.
+            break;
+          }
           case 'final_answer':
             finalText = data.text || '';
             renderFinalAnswer(bubble, finalText);
