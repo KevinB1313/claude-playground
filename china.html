@@ -164,9 +164,16 @@
 
     /* ── Chat section ── */
     .chat-section {
-      max-width: 800px;
+      max-width: 1080px;
       margin: 0 auto;
       padding: 0 24px;
+    }
+
+    /* ── Layout: sidebar + chat panel ── */
+    .chat-layout {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
     }
 
     .chat-panel {
@@ -174,7 +181,131 @@
       border-radius: 14px;
       box-shadow: 0 4px 24px rgba(0,0,0,0.09);
       overflow: hidden;
+      flex: 1;
+      min-width: 0;
     }
+
+    /* ── Conversation sidebar ── */
+    .conversation-sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: #ede9e0;
+      border-radius: 14px;
+      padding: 16px 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      max-height: 620px;
+    }
+
+    .btn-new-conversation {
+      width: 100%;
+      background: #C41E3A;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: Georgia, serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-bottom: 14px;
+      flex-shrink: 0;
+    }
+
+    .btn-new-conversation:hover { background: #a01830; }
+
+    .conversation-list {
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .conversation-list::-webkit-scrollbar { width: 5px; }
+    .conversation-list::-webkit-scrollbar-track { background: transparent; }
+    .conversation-list::-webkit-scrollbar-thumb { background: #cfc9bd; border-radius: 3px; }
+
+    .conversation-item {
+      background: #fff;
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: box-shadow 0.15s, transform 0.15s;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .conversation-item:hover {
+      box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+      transform: translateY(-1px);
+    }
+
+    .conversation-item.active {
+      border-left-color: #C41E3A;
+    }
+
+    .conversation-item-main {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .conversation-title {
+      font-size: 0.88rem;
+      color: #2c2c2c;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .conversation-time {
+      font-size: 0.72rem;
+      color: #999;
+      margin-top: 2px;
+    }
+
+    .btn-delete-conversation {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 0.82rem;
+      opacity: 0.35;
+      transition: opacity 0.15s;
+      flex-shrink: 0;
+      padding: 0 2px;
+      line-height: 1.4;
+    }
+
+    .conversation-item:hover .btn-delete-conversation { opacity: 0.75; }
+    .btn-delete-conversation:hover { opacity: 1; }
+
+    .conversation-empty {
+      font-size: 0.8rem;
+      color: #999;
+      font-style: italic;
+      text-align: center;
+      padding: 12px 4px;
+    }
+
+    .sidebar-toggle {
+      display: none;
+      background: #ede9e0;
+      border: 1px solid #ddd6c8;
+      color: #555;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: Georgia, serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      margin-bottom: 16px;
+      transition: background 0.15s;
+    }
+
+    .sidebar-toggle:hover { background: #e3ded2; }
 
     .chat-header {
       background: #1a1a1a;
@@ -422,6 +553,17 @@
       header h1 { font-size: 2.2rem; }
     }
 
+    @media (max-width: 768px) {
+      .chat-layout { flex-direction: column; }
+      .sidebar-toggle { display: inline-block; }
+      .conversation-sidebar {
+        display: none;
+        width: 100%;
+        max-height: 320px;
+      }
+      .conversation-sidebar.open { display: flex; }
+    }
+
     @media (max-width: 560px) {
       .dynasty-grid { grid-template-columns: 1fr; }
       header h1 { font-size: 1.8rem; }
@@ -505,7 +647,16 @@
   <section class="chat-section">
     <p class="section-label">AI Historian — Powered by Claude</p>
 
-    <div class="chat-panel">
+    <button class="sidebar-toggle" id="sidebarToggle">☰ Conversations</button>
+
+    <div class="chat-layout">
+
+      <aside class="conversation-sidebar" id="conversationSidebar">
+        <button class="btn-new-conversation" id="newConversationBtn">＋ New conversation</button>
+        <div class="conversation-list" id="conversationList"></div>
+      </aside>
+
+      <div class="chat-panel">
       <div class="chat-header">
         <div class="chat-header-left">
           <h2>Ask a Historian</h2>
@@ -525,6 +676,8 @@
         ></textarea>
         <button class="btn-send" id="sendBtn">Send</button>
       </div>
+      </div>
+
     </div>
   </section>
 
@@ -547,13 +700,18 @@ You are passionate about helping people understand China's extraordinary history
 
     const WORKER_URL = 'https://claude-proxy.kevinbyrd580.workers.dev';
 
-    let conversationHistory = [];
+    let currentConversationId = null;
     let isLoading = false;
 
     const messagesEl = document.getElementById('messages');
     const chatInput  = document.getElementById('chatInput');
     const sendBtn    = document.getElementById('sendBtn');
     const clearBtn   = document.getElementById('clearBtn');
+
+    const conversationListEl = document.getElementById('conversationList');
+    const conversationSidebar = document.getElementById('conversationSidebar');
+    const newConversationBtn = document.getElementById('newConversationBtn');
+    const sidebarToggle = document.getElementById('sidebarToggle');
 
     function addMessage(role, text, isTyping = false) {
       const wrapper = document.createElement('div');
@@ -686,9 +844,6 @@ You are passionate about helping people understand China's extraordinary history
       if (!userText.trim() || isLoading) return;
 
       addMessage('user', userText);
-      // history = everything BEFORE this question; current question sent separately.
-      const history = conversationHistory.slice();
-      conversationHistory.push({ role: 'user', content: userText });
       chatInput.value = '';
       autoResize();
 
@@ -722,6 +877,12 @@ You are passionate about helping people understand China's extraordinary history
         const { event, data } = parsed;
 
         switch (event) {
+          case 'conversation_id':
+            if (data.id != null) {
+              currentConversationId = data.id;
+              updateActiveConversation();
+            }
+            break;
           case 'status':
             if (workersStarted) {
               // Workers are running/finished — this announces Master synthesizing.
@@ -788,6 +949,12 @@ You are passionate about helping people understand China's extraordinary history
               : 'I apologize — something went wrong. Please try again.';
             break;
           case 'done':
+            if (data && data.conversationId != null) {
+              currentConversationId = data.conversationId;
+            }
+            // Refresh the sidebar so the new/updated conversation appears.
+            fetchConversations();
+            break;
           default:
             break;
         }
@@ -800,7 +967,7 @@ You are passionate about helping people understand China's extraordinary history
           body: JSON.stringify({
             mode: 'multi_agent',
             question: userText,
-            history: history,
+            conversationId: currentConversationId,
           }),
         });
 
@@ -828,18 +995,12 @@ You are passionate about helping people understand China's extraordinary history
         // Flush any trailing event left in the buffer.
         if (buffer.trim()) handleEvent(buffer);
 
-        if (finalText !== null) {
-          conversationHistory.push({ role: 'assistant', content: finalText });
-        } else {
-          // No answer produced — drop the user turn so history stays clean.
-          conversationHistory.pop();
-          if (!errorShown) {
-            bubble.innerHTML = '';
-            bubble.textContent = 'I apologize — something went wrong. Please try again.';
-          }
+        if (finalText === null && !errorShown) {
+          // No answer produced.
+          bubble.innerHTML = '';
+          bubble.textContent = 'I apologize — something went wrong. Please try again.';
         }
       } catch (err) {
-        conversationHistory.pop();
         bubble.innerHTML = '';
         bubble.textContent = 'I apologize — something went wrong. Please try again.';
         console.error(err);
@@ -855,8 +1016,155 @@ You are passionate about helping people understand China's extraordinary history
 
     function initWelcome() {
       messagesEl.innerHTML = '';
-      conversationHistory = [];
+      currentConversationId = null;
       addMessage('assistant', WELCOME_MESSAGE);
+      updateActiveConversation();
+    }
+
+    /* ── Conversation sidebar ── */
+
+    // Format a timestamp (unix or SQLite/ISO string) as a relative label.
+    function relativeTime(ts) {
+      if (!ts) return '';
+      let date;
+      if (typeof ts === 'number') {
+        date = new Date(ts < 1e12 ? ts * 1000 : ts);
+      } else {
+        // SQLite "YYYY-MM-DD HH:MM:SS" is UTC — normalize to ISO with Z.
+        const norm = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(ts)
+          ? ts.replace(' ', 'T') + 'Z'
+          : ts;
+        date = new Date(norm);
+      }
+      if (isNaN(date.getTime())) return '';
+      const sec = Math.floor((Date.now() - date.getTime()) / 1000);
+      const min = Math.floor(sec / 60);
+      const hr  = Math.floor(min / 60);
+      const day = Math.floor(hr / 24);
+      if (sec < 60) return 'Just now';
+      if (min < 60) return min + (min === 1 ? ' minute ago' : ' minutes ago');
+      if (hr < 24)  return hr + (hr === 1 ? ' hour ago' : ' hours ago');
+      if (day === 1) return 'Yesterday';
+      if (day < 7)  return day + ' days ago';
+      return date.toLocaleDateString();
+    }
+
+    // Highlight the active conversation in the sidebar.
+    function updateActiveConversation() {
+      document.querySelectorAll('.conversation-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.id === String(currentConversationId));
+      });
+    }
+
+    function renderConversationList(conversations) {
+      conversationListEl.innerHTML = '';
+      if (!conversations.length) {
+        const empty = document.createElement('div');
+        empty.className = 'conversation-empty';
+        empty.textContent = 'No conversations yet';
+        conversationListEl.appendChild(empty);
+        return;
+      }
+      conversations.forEach(conv => {
+        const item = document.createElement('div');
+        item.className = 'conversation-item';
+        item.dataset.id = String(conv.id);
+        if (conv.id === currentConversationId) item.classList.add('active');
+
+        const main = document.createElement('div');
+        main.className = 'conversation-item-main';
+
+        const title = document.createElement('div');
+        title.className = 'conversation-title';
+        title.textContent = conv.title || 'Untitled conversation';
+
+        const time = document.createElement('div');
+        time.className = 'conversation-time';
+        time.textContent = relativeTime(conv.updated_at || conv.created_at);
+
+        main.appendChild(title);
+        main.appendChild(time);
+
+        const del = document.createElement('button');
+        del.className = 'btn-delete-conversation';
+        del.textContent = '🗑️';
+        del.title = 'Delete conversation';
+        del.addEventListener('click', (e) => {
+          e.stopPropagation();
+          deleteConversation(conv.id);
+        });
+
+        item.appendChild(main);
+        item.appendChild(del);
+        item.addEventListener('click', () => loadConversation(conv.id));
+        conversationListEl.appendChild(item);
+      });
+    }
+
+    async function fetchConversations() {
+      try {
+        const res = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: 'get_conversations' }),
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        renderConversationList(data.conversations || []);
+      } catch (err) {
+        console.error('Failed to load conversations', err);
+      }
+    }
+
+    async function loadConversation(id) {
+      if (isLoading) return;
+      try {
+        const res = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: 'get_messages', conversationId: id }),
+        });
+        if (!res.ok) throw new Error('API error ' + res.status);
+        const data = await res.json();
+
+        currentConversationId = id;
+        messagesEl.innerHTML = '';
+        (data.messages || []).forEach(m => {
+          if (m.role === 'assistant') {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'message assistant';
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            renderFinalAnswer(bubble, m.content || '');
+            wrapper.appendChild(bubble);
+            messagesEl.appendChild(wrapper);
+          } else {
+            addMessage('user', m.content || '');
+          }
+        });
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+        updateActiveConversation();
+        // Collapse the sidebar overlay on mobile after selecting.
+        conversationSidebar.classList.remove('open');
+      } catch (err) {
+        console.error('Failed to load conversation', err);
+      }
+    }
+
+    async function deleteConversation(id) {
+      try {
+        const res = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: 'delete_conversation', conversationId: id }),
+        });
+        if (!res.ok) throw new Error('API error ' + res.status);
+        // If the open conversation was deleted, reset to a fresh chat.
+        if (id === currentConversationId) initWelcome();
+        fetchConversations();
+      } catch (err) {
+        console.error('Failed to delete conversation', err);
+      }
     }
 
     // Send button
@@ -873,8 +1181,16 @@ You are passionate about helping people understand China's extraordinary history
     // Auto-resize textarea
     chatInput.addEventListener('input', autoResize);
 
-    // Clear button
+    // Clear button — behaves like starting a fresh conversation.
     clearBtn.addEventListener('click', initWelcome);
+
+    // New conversation button (sidebar)
+    newConversationBtn.addEventListener('click', initWelcome);
+
+    // Mobile sidebar toggle
+    sidebarToggle.addEventListener('click', () => {
+      conversationSidebar.classList.toggle('open');
+    });
 
     // Dynasty cards → pre-fill chat
     document.querySelectorAll('.dynasty-card').forEach(card => {
@@ -890,6 +1206,7 @@ You are passionate about helping people understand China's extraordinary history
 
     // Init on load
     initWelcome();
+    fetchConversations();
   </script>
 </body>
 </html>
