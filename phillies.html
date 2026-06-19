@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Philadelphia Phillies — 2026 Batting Stats</title>
+  <title>Phillies AI Analyst — Powered by Five Specialist Agents</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -12,569 +12,1009 @@
       background: #f7f5f0;
       color: #2c2c2c;
       min-height: 100vh;
-      padding: 48px 20px;
+      padding: 0 0 80px;
     }
 
-    .container {
-      width: 100%;
-      max-width: 1100px;
-      margin: 0 auto;
+    /* ── Navigation ── */
+    .nav {
+      padding: 18px 32px;
+      border-bottom: 1px solid #e8e4dc;
+      background: #f7f5f0;
     }
 
-    h1 {
+    .nav a {
+      text-decoration: none;
+      color: #E81828;
+      font-size: 0.9rem;
+      letter-spacing: 0.01em;
+      transition: opacity 0.15s;
+    }
+
+    .nav a:hover { opacity: 0.7; }
+
+    /* ── Page header ── */
+    header {
       text-align: center;
-      font-size: 1.75rem;
-      font-weight: normal;
-      color: #1a1a1a;
-      margin-bottom: 8px;
-      letter-spacing: 0.02em;
+      padding: 48px 24px 36px;
     }
 
-    .subtitle {
+    .section-label {
       text-align: center;
       font-size: 0.8rem;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 18px;
+    }
+
+    header h1 {
+      font-size: 3.2rem;
+      font-weight: bold;
+      color: #1a1a1a;
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    header p {
+      font-size: 1.05rem;
       color: #888;
-      margin-bottom: 32px;
+      font-style: italic;
+      letter-spacing: 0.03em;
+      margin-bottom: 18px;
     }
 
-    .table-wrapper {
-      overflow-x: auto;
-      border-radius: 6px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    .header-underline {
+      width: 90px;
+      height: 4px;
+      background: #E81828;
+      margin: 0 auto;
+      border-radius: 2px;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.92rem;
+    /* ── Chat section ── */
+    .chat-section {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Layout: sidebar + chat panel ── */
+    .chat-layout {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .chat-panel {
       background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+      overflow: hidden;
+      flex: 1;
+      min-width: 0;
     }
 
-    thead tr {
+    /* ── Prominent search bar (the chat input) ── */
+    .search-area {
+      padding: 26px 26px 22px;
+      border-bottom: 1px solid #f0ebe0;
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .search-input {
+      flex: 1;
+      resize: none;
+      border: 2px solid #e0dbd0;
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-family: Georgia, serif;
+      font-size: 1.05rem;
+      color: #2c2c2c;
+      background: #fdfbf7;
+      outline: none;
+      transition: border-color 0.15s;
+      line-height: 1.5;
+      min-height: 54px;
+      max-height: 140px;
+      overflow-y: auto;
+    }
+
+    .search-input:focus {
+      border-color: #E81828;
+    }
+
+    .search-input::placeholder {
+      color: #bbb;
+      font-style: italic;
+    }
+
+    .btn-send {
       background: #E81828;
       color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 28px;
+      font-family: Georgia, serif;
+      font-size: 1.02rem;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+      white-space: nowrap;
+      height: 54px;
     }
 
-    thead th {
-      padding: 11px 10px;
-      font-weight: normal;
-      letter-spacing: 0.06em;
+    .btn-send:hover { background: #c9111e; }
+    .btn-send:disabled { opacity: 0.45; cursor: default; }
+
+    .chat-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      padding: 10px 26px 0;
+    }
+
+    .btn-clear {
+      background: transparent;
+      border: 1px solid #e0dbd0;
+      color: #999;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-family: Georgia, serif;
       font-size: 0.78rem;
-      text-transform: uppercase;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
       white-space: nowrap;
     }
 
-    thead th.col-name {
-      text-align: left;
-      padding-left: 16px;
-    }
-
-    thead th.col-pos {
-      text-align: left;
-    }
-
-    thead th.col-num {
-      text-align: right;
-    }
-
-    thead th.col-avg {
-      text-align: right;
-      padding-right: 14px;
-    }
-
-    /* group dividers in header */
-    thead th.divider-left {
-      border-left: 1px solid rgba(255,255,255,0.25);
-    }
-
-    tbody tr:nth-child(odd)  { background: #fffdf9; }
-    tbody tr:nth-child(even) { background: #f5f1eb; }
-
-    tbody tr:hover { background: #fde8ea; }
-
-    tbody td {
-      padding: 9px 10px;
-      white-space: nowrap;
-    }
-
-    tbody td.col-name {
-      text-align: left;
-      padding-left: 16px;
-      font-weight: normal;
-      color: #1a1a1a;
-    }
-
-    tbody td.col-pos {
-      text-align: left;
-      color: #666;
-      font-size: 0.85rem;
-    }
-
-    tbody td.col-num {
-      text-align: right;
-      color: #333;
-    }
-
-    tbody td.col-avg {
-      text-align: right;
-      padding-right: 14px;
-      font-style: italic;
-      color: #1a1a1a;
-    }
-
-    tbody td.col-ops {
-      text-align: right;
-      padding-right: 14px;
-      font-weight: bold;
+    .btn-clear:hover {
+      border-color: #E81828;
       color: #E81828;
     }
 
-    tbody td.divider-left {
-      border-left: 1px solid #e8e4dc;
+    /* ── Conversation sidebar ── */
+    .conversation-sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: #f0ebe2;
+      border-radius: 14px;
+      padding: 16px 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      max-height: 620px;
     }
 
-    tfoot tr {
-      background: #2c1a1c;
-    }
-
-    tfoot td {
-      padding: 10px 16px;
-      font-size: 0.78rem;
-      letter-spacing: 0.08em;
-      color: #c9a8ad;
-      text-align: right;
-    }
-
-    .last-updated {
-      text-align: center;
-      font-size: 0.75rem;
-      color: #aaa;
-      font-style: italic;
-      margin-top: -24px;
-      margin-bottom: 28px;
-    }
-
-    thead th {
+    .btn-new-conversation {
+      width: 100%;
+      background: #E81828;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: Georgia, serif;
+      font-size: 0.9rem;
       cursor: pointer;
-      user-select: none;
+      transition: background 0.15s;
+      margin-bottom: 14px;
+      flex-shrink: 0;
     }
 
-    thead th:hover {
-      background: #c9111e;
+    .btn-new-conversation:hover { background: #c9111e; }
+
+    .conversation-list {
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
     }
 
-    .sort-arrow {
-      display: inline-block;
-      margin-left: 4px;
-      font-size: 0.65rem;
-      vertical-align: middle;
+    .conversation-list::-webkit-scrollbar { width: 5px; }
+    .conversation-list::-webkit-scrollbar-track { background: transparent; }
+    .conversation-list::-webkit-scrollbar-thumb { background: #cfc9bd; border-radius: 3px; }
+
+    .conversation-item {
+      background: #fff;
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: box-shadow 0.15s, transform 0.15s;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .conversation-item:hover {
+      box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+      transform: translateY(-1px);
+    }
+
+    .conversation-item.active {
+      border-left-color: #E81828;
+    }
+
+    .conversation-item-main {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .conversation-title {
+      font-size: 0.88rem;
+      color: #2c2c2c;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .conversation-time {
+      font-size: 0.72rem;
+      color: #999;
+      margin-top: 2px;
+    }
+
+    .btn-delete-conversation {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 0.82rem;
+      opacity: 0.35;
+      transition: opacity 0.15s;
+      flex-shrink: 0;
+      padding: 0 2px;
+      line-height: 1.4;
+    }
+
+    .conversation-item:hover .btn-delete-conversation { opacity: 0.75; }
+    .btn-delete-conversation:hover { opacity: 1; }
+
+    .conversation-empty {
+      font-size: 0.8rem;
+      color: #999;
+      font-style: italic;
+      text-align: center;
+      padding: 12px 4px;
+    }
+
+    .sidebar-toggle {
+      display: none;
+      background: #f0ebe2;
+      border: 1px solid #ddd6c8;
+      color: #555;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: Georgia, serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      margin-bottom: 16px;
+      transition: background 0.15s;
+    }
+
+    .sidebar-toggle:hover { background: #e7e1d4; }
+
+    /* ── Messages ── */
+    .messages {
+      height: 460px;
+      overflow-y: auto;
+      padding: 24px 24px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      scroll-behavior: smooth;
+    }
+
+    .message {
+      display: flex;
+      flex-direction: column;
+      max-width: 82%;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+
+    .message.assistant {
+      align-self: flex-start;
+      align-items: flex-start;
+    }
+
+    .message-bubble {
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.93rem;
+      line-height: 1.65;
+    }
+
+    .message.user .message-bubble {
+      background: #f0ebe0;
+      color: #2c2c2c;
+      border-bottom-right-radius: 3px;
+    }
+
+    .message.assistant .message-bubble {
+      background: #fff;
+      color: #2c2c2c;
+      border-left: 3px solid #E81828;
+      border-bottom-left-radius: 3px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+
+    .typing-indicator .message-bubble {
+      color: #999;
+      font-style: italic;
+    }
+
+    /* ── Live agent status ── */
+    .agent-status {
+      font-style: italic;
+      color: #888;
+    }
+
+    /* ── Parallel worker status list ── */
+    .worker-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .worker-line {
+      padding-left: 14px;
+      font-style: italic;
+      color: #888;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      transition: color 0.3s ease, opacity 0.3s ease;
+    }
+
+    .worker-line.done {
+      color: #aaa;
       opacity: 0.85;
+    }
+
+    .worker-line.error {
+      color: #E81828;
+      opacity: 1;
+    }
+
+    .master-line {
+      padding-left: 14px;
+      margin-top: 6px;
+      font-style: italic;
+      color: #888;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      transition: color 0.3s ease, opacity 0.3s ease;
+    }
+
+    /* ── Rendered markdown inside assistant bubbles ── */
+    .message-bubble h2 {
+      font-size: 1.1rem;
+      font-weight: normal;
+      color: #1a1a1a;
+      margin: 10px 0 6px;
+    }
+
+    .message-bubble h3 {
+      font-size: 1rem;
+      font-weight: normal;
+      color: #1a1a1a;
+      margin: 8px 0 4px;
+    }
+
+    .message-bubble p { margin: 0 0 8px; }
+    .message-bubble p:last-child { margin-bottom: 0; }
+
+    .message-bubble hr {
+      border: none;
+      border-top: 1px solid #e0dbd0;
+      margin: 10px 0;
+    }
+
+    /* ── Sources footer ── */
+    .sources {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #f0ebe0;
+      font-size: 0.78rem;
+      color: #999;
+    }
+
+    .sources .sources-label {
+      font-style: italic;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .sources a {
+      color: #b51521;
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .sources a:hover { text-decoration: underline; }
+
+    /* ── Scrollbar ── */
+    .messages::-webkit-scrollbar { width: 5px; }
+    .messages::-webkit-scrollbar-track { background: transparent; }
+    .messages::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 860px) {
+      header h1 { font-size: 2.4rem; }
+    }
+
+    @media (max-width: 768px) {
+      .chat-layout { flex-direction: column; }
+      .sidebar-toggle { display: inline-block; }
+      .conversation-sidebar {
+        display: none;
+        width: 100%;
+        max-height: 320px;
+      }
+      .conversation-sidebar.open { display: flex; }
+    }
+
+    @media (max-width: 560px) {
+      header h1 { font-size: 1.9rem; }
+      .search-area { flex-direction: column; align-items: stretch; }
+      .btn-send { width: 100%; }
+      .messages { height: 380px; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
 
-    <h1>Philadelphia Phillies &mdash; 2026 Batting Stats</h1>
-    <div class="subtitle">Regular Season</div>
-    <div class="last-updated">Last updated: May 3, 2026</div>
+  <nav class="nav">
+    <a href="index.html">← Back to Kevin's Projects</a>
+  </nav>
 
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th class="col-name" data-col="0">Player<span class="sort-arrow"></span></th>
-            <th class="col-pos" data-col="1">Pos<span class="sort-arrow"></span></th>
-            <th class="col-num" data-col="2">G<span class="sort-arrow"></span></th>
-            <th class="col-num" data-col="3">AB<span class="sort-arrow"></span></th>
-            <th class="col-num" data-col="4">R<span class="sort-arrow"></span></th>
-            <th class="col-num" data-col="5">H<span class="sort-arrow"></span></th>
-            <th class="col-num" data-col="6">2B<span class="sort-arrow"></span></th>
-            <th class="col-num" data-col="7">3B<span class="sort-arrow"></span></th>
-            <th class="col-num" data-col="8">HR<span class="sort-arrow"></span></th>
-            <th class="col-num" data-col="9">RBI<span class="sort-arrow"></span></th>
-            <th class="col-num divider-left" data-col="10">BB<span class="sort-arrow"></span></th>
-            <th class="col-num" data-col="11">SO<span class="sort-arrow"></span></th>
-            <th class="col-num" data-col="12">SB<span class="sort-arrow"></span></th>
-            <th class="col-num" data-col="13">CS<span class="sort-arrow"></span></th>
-            <th class="col-avg divider-left" data-col="14">AVG<span class="sort-arrow"></span></th>
-            <th class="col-avg" data-col="15">OBP<span class="sort-arrow"></span></th>
-            <th class="col-avg" data-col="16">SLG<span class="sort-arrow"></span></th>
-            <th class="col-avg" data-col="17">OPS<span class="sort-arrow"></span></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="col-name">Kyle Schwarber</td>
-            <td class="col-pos">DH</td>
-            <td class="col-num">34</td>
-            <td class="col-num">123</td>
-            <td class="col-num">22</td>
-            <td class="col-num">27</td>
-            <td class="col-num">6</td>
-            <td class="col-num">1</td>
-            <td class="col-num">11</td>
-            <td class="col-num">20</td>
-            <td class="col-num divider-left">25</td>
-            <td class="col-num">48</td>
-            <td class="col-num">0</td>
-            <td class="col-num">0</td>
-            <td class="col-avg divider-left">.220</td>
-            <td class="col-avg">.368</td>
-            <td class="col-avg">.553</td>
-            <td class="col-ops">.921</td>
-          </tr>
-          <tr>
-            <td class="col-name">Bryce Harper</td>
-            <td class="col-pos">1B</td>
-            <td class="col-num">34</td>
-            <td class="col-num">125</td>
-            <td class="col-num">18</td>
-            <td class="col-num">32</td>
-            <td class="col-num">8</td>
-            <td class="col-num">1</td>
-            <td class="col-num">6</td>
-            <td class="col-num">19</td>
-            <td class="col-num divider-left">19</td>
-            <td class="col-num">25</td>
-            <td class="col-num">2</td>
-            <td class="col-num">1</td>
-            <td class="col-avg divider-left">.256</td>
-            <td class="col-avg">.352</td>
-            <td class="col-avg">.480</td>
-            <td class="col-ops">.832</td>
-          </tr>
-          <tr>
-            <td class="col-name">Brandon Marsh</td>
-            <td class="col-pos">LF</td>
-            <td class="col-num">30</td>
-            <td class="col-num">106</td>
-            <td class="col-num">16</td>
-            <td class="col-num">33</td>
-            <td class="col-num">7</td>
-            <td class="col-num">0</td>
-            <td class="col-num">4</td>
-            <td class="col-num">18</td>
-            <td class="col-num divider-left">5</td>
-            <td class="col-num">24</td>
-            <td class="col-num">3</td>
-            <td class="col-num">0</td>
-            <td class="col-avg divider-left">.311</td>
-            <td class="col-avg">.342</td>
-            <td class="col-avg">.491</td>
-            <td class="col-ops">.833</td>
-          </tr>
-          <tr>
-            <td class="col-name">Trea Turner</td>
-            <td class="col-pos">SS</td>
-            <td class="col-num">33</td>
-            <td class="col-num">136</td>
-            <td class="col-num">21</td>
-            <td class="col-num">33</td>
-            <td class="col-num">6</td>
-            <td class="col-num">0</td>
-            <td class="col-num">4</td>
-            <td class="col-num">11</td>
-            <td class="col-num divider-left">12</td>
-            <td class="col-num">29</td>
-            <td class="col-num">3</td>
-            <td class="col-num">0</td>
-            <td class="col-avg divider-left">.243</td>
-            <td class="col-avg">.304</td>
-            <td class="col-avg">.375</td>
-            <td class="col-ops">.679</td>
-          </tr>
-          <tr>
-            <td class="col-name">Adolis Garc&#237;a</td>
-            <td class="col-pos">RF</td>
-            <td class="col-num">33</td>
-            <td class="col-num">119</td>
-            <td class="col-num">10</td>
-            <td class="col-num">28</td>
-            <td class="col-num">5</td>
-            <td class="col-num">1</td>
-            <td class="col-num">3</td>
-            <td class="col-num">11</td>
-            <td class="col-num divider-left">11</td>
-            <td class="col-num">34</td>
-            <td class="col-num">1</td>
-            <td class="col-num">0</td>
-            <td class="col-avg divider-left">.235</td>
-            <td class="col-avg">.308</td>
-            <td class="col-avg">.370</td>
-            <td class="col-ops">.678</td>
-          </tr>
-          <tr>
-            <td class="col-name">Bryson Stott</td>
-            <td class="col-pos">2B</td>
-            <td class="col-num">28</td>
-            <td class="col-num">97</td>
-            <td class="col-num">8</td>
-            <td class="col-num">20</td>
-            <td class="col-num">2</td>
-            <td class="col-num">2</td>
-            <td class="col-num">2</td>
-            <td class="col-num">1</td>
-            <td class="col-num divider-left">16</td>
-            <td class="col-num">19</td>
-            <td class="col-num">6</td>
-            <td class="col-num">0</td>
-            <td class="col-avg divider-left">.206</td>
-            <td class="col-avg">.260</td>
-            <td class="col-avg">.330</td>
-            <td class="col-ops">.590</td>
-          </tr>
-          <tr>
-            <td class="col-name">Alec Bohm</td>
-            <td class="col-pos">3B</td>
-            <td class="col-num">32</td>
-            <td class="col-num">117</td>
-            <td class="col-num">7</td>
-            <td class="col-num">19</td>
-            <td class="col-num">3</td>
-            <td class="col-num">0</td>
-            <td class="col-num">1</td>
-            <td class="col-num">15</td>
-            <td class="col-num divider-left">9</td>
-            <td class="col-num">22</td>
-            <td class="col-num">0</td>
-            <td class="col-num">0</td>
-            <td class="col-avg divider-left">.162</td>
-            <td class="col-avg">.229</td>
-            <td class="col-avg">.214</td>
-            <td class="col-ops">.443</td>
-          </tr>
-          <tr>
-            <td class="col-name">Rafael March&#225;n</td>
-            <td class="col-pos">C</td>
-            <td class="col-num">16</td>
-            <td class="col-num">51</td>
-            <td class="col-num">3</td>
-            <td class="col-num">4</td>
-            <td class="col-num">0</td>
-            <td class="col-num">0</td>
-            <td class="col-num">1</td>
-            <td class="col-num">2</td>
-            <td class="col-num divider-left">1</td>
-            <td class="col-num">11</td>
-            <td class="col-num">0</td>
-            <td class="col-num">0</td>
-            <td class="col-avg divider-left">.078</td>
-            <td class="col-avg">.130</td>
-            <td class="col-avg">.137</td>
-            <td class="col-ops">.267</td>
-          </tr>
-          <tr>
-            <td class="col-name">J.T. Realmuto</td>
-            <td class="col-pos">C</td>
-            <td class="col-num">19</td>
-            <td class="col-num">60</td>
-            <td class="col-num">6</td>
-            <td class="col-num">15</td>
-            <td class="col-num">2</td>
-            <td class="col-num">0</td>
-            <td class="col-num">1</td>
-            <td class="col-num">5</td>
-            <td class="col-num divider-left">5</td>
-            <td class="col-num">12</td>
-            <td class="col-num">0</td>
-            <td class="col-num">0</td>
-            <td class="col-avg divider-left">.250</td>
-            <td class="col-avg">.324</td>
-            <td class="col-avg">.333</td>
-            <td class="col-ops">.657</td>
-          </tr>
-          <tr>
-            <td class="col-name">Felix Reyes</td>
-            <td class="col-pos">LF</td>
-            <td class="col-num">8</td>
-            <td class="col-num">28</td>
-            <td class="col-num">2</td>
-            <td class="col-num">4</td>
-            <td class="col-num">1</td>
-            <td class="col-num">0</td>
-            <td class="col-num">1</td>
-            <td class="col-num">1</td>
-            <td class="col-num divider-left">0</td>
-            <td class="col-num">7</td>
-            <td class="col-num">0</td>
-            <td class="col-num">0</td>
-            <td class="col-avg divider-left">.143</td>
-            <td class="col-avg">.143</td>
-            <td class="col-avg">.286</td>
-            <td class="col-ops">.429</td>
-          </tr>
-          <tr>
-            <td class="col-name">Edmundo Sosa</td>
-            <td class="col-pos">2B</td>
-            <td class="col-num">18</td>
-            <td class="col-num">47</td>
-            <td class="col-num">5</td>
-            <td class="col-num">13</td>
-            <td class="col-num">3</td>
-            <td class="col-num">0</td>
-            <td class="col-num">1</td>
-            <td class="col-num">8</td>
-            <td class="col-num divider-left">2</td>
-            <td class="col-num">9</td>
-            <td class="col-num">2</td>
-            <td class="col-num">0</td>
-            <td class="col-avg divider-left">.277</td>
-            <td class="col-avg">.306</td>
-            <td class="col-avg">.404</td>
-            <td class="col-ops">.710</td>
-          </tr>
-          <tr>
-            <td class="col-name">Justin Crawford</td>
-            <td class="col-pos">CF</td>
-            <td class="col-num">29</td>
-            <td class="col-num">97</td>
-            <td class="col-num">8</td>
-            <td class="col-num">26</td>
-            <td class="col-num">6</td>
-            <td class="col-num">2</td>
-            <td class="col-num">0</td>
-            <td class="col-num">7</td>
-            <td class="col-num divider-left">8</td>
-            <td class="col-num">19</td>
-            <td class="col-num">3</td>
-            <td class="col-num">2</td>
-            <td class="col-avg divider-left">.268</td>
-            <td class="col-avg">.336</td>
-            <td class="col-avg">.371</td>
-            <td class="col-ops">.707</td>
-          </tr>
-          <tr>
-            <td class="col-name">Otto Kemp</td>
-            <td class="col-pos">LF</td>
-            <td class="col-num">10</td>
-            <td class="col-num">20</td>
-            <td class="col-num">0</td>
-            <td class="col-num">2</td>
-            <td class="col-num">0</td>
-            <td class="col-num">0</td>
-            <td class="col-num">0</td>
-            <td class="col-num">0</td>
-            <td class="col-num divider-left">1</td>
-            <td class="col-num">9</td>
-            <td class="col-num">0</td>
-            <td class="col-num">0</td>
-            <td class="col-avg divider-left">.100</td>
-            <td class="col-avg">.182</td>
-            <td class="col-avg">.100</td>
-            <td class="col-ops">.282</td>
-          </tr>
-          <tr>
-            <td class="col-name">Dylan Moore</td>
-            <td class="col-pos">UT</td>
-            <td class="col-num">15</td>
-            <td class="col-num">12</td>
-            <td class="col-num">3</td>
-            <td class="col-num">0</td>
-            <td class="col-num">0</td>
-            <td class="col-num">0</td>
-            <td class="col-num">0</td>
-            <td class="col-num">0</td>
-            <td class="col-num divider-left">3</td>
-            <td class="col-num">6</td>
-            <td class="col-num">1</td>
-            <td class="col-num">0</td>
-            <td class="col-avg divider-left">.000</td>
-            <td class="col-avg">.200</td>
-            <td class="col-avg">.000</td>
-            <td class="col-ops">.200</td>
-          </tr>
-          <tr>
-            <td class="col-name">Garrett Stubbs</td>
-            <td class="col-pos">C</td>
-            <td class="col-num">5</td>
-            <td class="col-num">11</td>
-            <td class="col-num">2</td>
-            <td class="col-num">3</td>
-            <td class="col-num">0</td>
-            <td class="col-num">0</td>
-            <td class="col-num">0</td>
-            <td class="col-num">1</td>
-            <td class="col-num divider-left">1</td>
-            <td class="col-num">1</td>
-            <td class="col-num">0</td>
-            <td class="col-num">0</td>
-            <td class="col-avg divider-left">.273</td>
-            <td class="col-avg">.308</td>
-            <td class="col-avg">.273</td>
-            <td class="col-ops">.581</td>
-          </tr>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="18">2026 Philadelphia Phillies</td>
-          </tr>
-        </tfoot>
-      </table>
+  <header>
+    <p class="section-label">AI Analyst — Powered by Claude</p>
+    <h1>Phillies AI Analyst</h1>
+    <p>Powered by five specialist agents — ask anything about the Phillies</p>
+    <div class="header-underline"></div>
+  </header>
+
+  <!-- ── Chat section ── -->
+  <section class="chat-section">
+
+    <button class="sidebar-toggle" id="sidebarToggle">☰ Conversations</button>
+
+    <div class="chat-layout">
+
+      <aside class="conversation-sidebar" id="conversationSidebar">
+        <button class="btn-new-conversation" id="newConversationBtn">＋ New conversation</button>
+        <div class="conversation-list" id="conversationList"></div>
+      </aside>
+
+      <div class="chat-panel">
+
+        <!-- Prominent search bar — this IS the chat input -->
+        <div class="search-area">
+          <textarea
+            class="search-input"
+            id="chatInput"
+            placeholder="Ask anything about the Phillies..."
+            rows="1"
+          ></textarea>
+          <button class="btn-send" id="sendBtn">Send</button>
+        </div>
+
+        <div class="chat-toolbar">
+          <button class="btn-clear" id="clearBtn">Clear conversation</button>
+        </div>
+
+        <div class="messages" id="messages"></div>
+
+      </div>
+
     </div>
-
-  </div>
+  </section>
 
   <script>
-    (function () {
-      const tbody = document.querySelector('tbody');
-      const headers = document.querySelectorAll('thead th[data-col]');
+    const WELCOME_MESSAGE = '⚾ Welcome to the Phillies AI Analyst! I have five specialist agents ready to help — a live Researcher for current stats and news, a Franchise Historian who knows every season since 1883, a Sabermetrics Expert for advanced analytics, a Data Analyst for stat comparisons, and a Fan Culture Expert who bleeds red. What would you like to know?';
 
-      // stamp original order so we can restore it
-      Array.from(tbody.rows).forEach((tr, i) => tr.dataset.orig = i);
+    const WORKER_URL = 'https://claude-proxy.kevinbyrd580.workers.dev';
+    const DOMAIN = 'phillies';
 
-      // columns 0-1 are text; 2-13 integer; 14-17 decimal stat
-      function cellValue(tr, col) {
-        const text = tr.cells[col].textContent.trim();
-        if (col >= 2 && col <= 13) return parseInt(text, 10);
-        if (col >= 14) return parseFloat(text.replace(/^\./, '0.'));
-        return text.toLowerCase();
+    let currentConversationId = null;
+    let isLoading = false;
+
+    const messagesEl = document.getElementById('messages');
+    const chatInput  = document.getElementById('chatInput');
+    const sendBtn    = document.getElementById('sendBtn');
+    const clearBtn   = document.getElementById('clearBtn');
+
+    const conversationListEl = document.getElementById('conversationList');
+    const conversationSidebar = document.getElementById('conversationSidebar');
+    const newConversationBtn = document.getElementById('newConversationBtn');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+
+    function addMessage(role, text, isTyping = false) {
+      const wrapper = document.createElement('div');
+      wrapper.className = `message ${role}${isTyping ? ' typing-indicator' : ''}`;
+
+      const bubble = document.createElement('div');
+      bubble.className = 'message-bubble';
+      bubble.textContent = text;
+
+      wrapper.appendChild(bubble);
+      messagesEl.appendChild(wrapper);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      return wrapper;
+    }
+
+    function setLoading(loading) {
+      isLoading = loading;
+      sendBtn.disabled = loading;
+      chatInput.disabled = loading;
+    }
+
+    /* ── Markdown rendering ── */
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    // Inline: bold BEFORE italic so ** isn't eaten by the * rule.
+    function inlineMarkdown(str) {
+      return str
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    }
+
+    function markdownToHtml(md) {
+      const lines = escapeHtml(md).split('\n');
+      const html = [];
+      let para = [];
+
+      const flushPara = () => {
+        if (para.length) {
+          html.push('<p>' + para.join('<br>') + '</p>');
+          para = [];
+        }
+      };
+
+      for (const raw of lines) {
+        const line = raw.trim();
+        if (line === '') { flushPara(); continue; }
+        if (line === '---' || line === '***' || line === '___') {
+          flushPara();
+          html.push('<hr>');
+          continue;
+        }
+        if (/^##\s+/.test(line)) {
+          flushPara();
+          html.push('<h3>' + inlineMarkdown(line.replace(/^##\s+/, '')) + '</h3>');
+          continue;
+        }
+        if (/^#\s+/.test(line)) {
+          flushPara();
+          html.push('<h2>' + inlineMarkdown(line.replace(/^#\s+/, '')) + '</h2>');
+          continue;
+        }
+        para.push(inlineMarkdown(line));
+      }
+      flushPara();
+      return html.join('');
+    }
+
+    // Render the final answer (with optional Sources footer) into a bubble.
+    function renderFinalAnswer(bubble, text) {
+      const lines = text.split('\n');
+      const srcIdx = lines.findIndex(l => /^\s*sources:/i.test(l));
+
+      let mainText = text;
+      let sourcesBlock = null;
+      if (srcIdx !== -1) {
+        mainText = lines.slice(0, srcIdx).join('\n');
+        sourcesBlock = lines.slice(srcIdx).join('\n');
       }
 
-      let sortCol = -1;
-      let sortDir = 'asc';
+      bubble.innerHTML = markdownToHtml(mainText);
 
-      function applySort(col) {
-        if (col === sortCol) {
-          sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-        } else {
-          sortCol = col;
-          sortDir = 'asc';
+      if (sourcesBlock) {
+        const urls = sourcesBlock.match(/https?:\/\/[^\s)<>"']+/g) || [];
+        if (urls.length) {
+          const sources = document.createElement('div');
+          sources.className = 'sources';
+          const label = document.createElement('span');
+          label.className = 'sources-label';
+          label.textContent = 'Sources';
+          sources.appendChild(label);
+          urls.forEach(url => {
+            const a = document.createElement('a');
+            a.href = url;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            a.textContent = url;
+            sources.appendChild(a);
+            sources.appendChild(document.createElement('br'));
+          });
+          bubble.appendChild(sources);
+        }
+      }
+    }
+
+    // Parse one raw SSE event block ("event: x\ndata: {...}") into { event, data }.
+    function parseSSEEvent(block) {
+      let eventType = null;
+      let dataStr = '';
+      for (const line of block.split('\n')) {
+        if (line.startsWith('event:')) {
+          eventType = line.slice(6).trim();
+        } else if (line.startsWith('data:')) {
+          dataStr += line.slice(5).trim();
+        }
+      }
+      if (!eventType) return null;
+      let data = {};
+      if (dataStr) {
+        try { data = JSON.parse(dataStr); } catch (e) { /* ignore malformed */ }
+      }
+      return { event: eventType, data };
+    }
+
+    async function sendMessage(userText) {
+      if (!userText.trim() || isLoading) return;
+
+      addMessage('user', userText);
+      chatInput.value = '';
+      autoResize();
+
+      setLoading(true);
+
+      // Single assistant bubble that starts as a live status indicator.
+      const wrapper = document.createElement('div');
+      wrapper.className = 'message assistant';
+      const bubble = document.createElement('div');
+      bubble.className = 'message-bubble';
+      const status = document.createElement('div');
+      status.className = 'agent-status';
+      status.textContent = '🎯 Master is planning…';
+      bubble.appendChild(status);
+      wrapper.appendChild(bubble);
+      messagesEl.appendChild(wrapper);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+
+      let finalText = null;
+      let errorShown = false;
+
+      // Parallel-worker UI state.
+      let workersStarted = false;
+      let workerList = null;            // container <div> for the worker lines
+      const workerEls = new Map();      // id → { el, label }
+      let masterLine = null;
+
+      const handleEvent = (block) => {
+        const parsed = parseSSEEvent(block);
+        if (!parsed) return;
+        const { event, data } = parsed;
+
+        switch (event) {
+          case 'conversation_id':
+            if (data.id != null) {
+              currentConversationId = data.id;
+              updateActiveConversation();
+            }
+            break;
+          case 'status':
+            if (workersStarted) {
+              // Workers are running/finished — this announces Master synthesizing.
+              if (!masterLine) {
+                masterLine = document.createElement('div');
+                masterLine.className = 'master-line';
+                bubble.appendChild(masterLine);
+              }
+              masterLine.textContent = data.message || '🎯 Master is synthesizing the answer…';
+            } else if (data.message) {
+              status.textContent = data.message;
+            }
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+            break;
+          case 'plan':
+            console.log('[plan]', data);
+            break;
+          case 'workers_starting': {
+            workersStarted = true;
+            // Replace the single planning line with a stacked list of workers.
+            bubble.innerHTML = '';
+            workerList = document.createElement('div');
+            workerList.className = 'worker-list';
+            bubble.appendChild(workerList);
+            (data.workers || []).forEach(w => {
+              const line = document.createElement('div');
+              line.className = 'worker-line';
+              line.textContent = w.label || w.id;
+              workerList.appendChild(line);
+              workerEls.set(w.id, { el: line, label: w.label || w.id });
+            });
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+            break;
+          }
+          case 'worker_done': {
+            const entry = workerEls.get(data.id);
+            if (entry) {
+              entry.el.className = 'worker-line done';
+              entry.el.textContent = '✓ ' + entry.label;
+            }
+            console.log('[worker_done]', data);
+            break;
+          }
+          case 'worker_error': {
+            const entry = workerEls.get(data.id);
+            if (entry) {
+              entry.el.className = 'worker-line error';
+              entry.el.textContent = '⚠️ ' + entry.label;
+            }
+            console.warn('[worker_error]', data);
+            // Do not abort — other workers may still complete.
+            break;
+          }
+          case 'final_answer':
+            finalText = data.text || '';
+            renderFinalAnswer(bubble, finalText);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+            break;
+          case 'error':
+            errorShown = true;
+            bubble.innerHTML = '';
+            bubble.textContent = data.message
+              ? `I apologize — ${data.message}`
+              : 'I apologize — something went wrong. Please try again.';
+            break;
+          case 'done':
+            if (data && data.conversationId != null) {
+              currentConversationId = data.conversationId;
+            }
+            // Refresh the sidebar so the new/updated conversation appears.
+            fetchConversations();
+            break;
+          default:
+            break;
+        }
+      };
+
+      try {
+        const response = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            mode: 'multi_agent',
+            question: userText,
+            conversationId: currentConversationId,
+            domain: DOMAIN,
+          }),
+        });
+
+        if (!response.ok || !response.body) {
+          throw new Error(`API error ${response.status}`);
         }
 
-        const rows = Array.from(tbody.rows);
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
 
-        rows.sort((a, b) => {
-          const av = cellValue(a, col);
-          const bv = cellValue(b, col);
-          let cmp;
-          if (typeof av === 'number') {
-            cmp = av - bv;
-          } else {
-            cmp = av < bv ? -1 : av > bv ? 1 : 0;
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+
+          // Split on blank lines to isolate complete SSE events.
+          let sep;
+          while ((sep = buffer.indexOf('\n\n')) !== -1) {
+            const block = buffer.slice(0, sep);
+            buffer = buffer.slice(sep + 2);
+            if (block.trim()) handleEvent(block);
           }
-          return sortDir === 'asc' ? cmp : -cmp;
-        });
+        }
+        // Flush any trailing event left in the buffer.
+        if (buffer.trim()) handleEvent(buffer);
 
-        rows.forEach(tr => tbody.appendChild(tr));
-
-        headers.forEach(th => {
-          const arrow = th.querySelector('.sort-arrow');
-          const thCol = parseInt(th.dataset.col, 10);
-          if (thCol === sortCol) {
-            arrow.textContent = sortDir === 'asc' ? ' ▲' : ' ▼';
-          } else {
-            arrow.textContent = '';
-          }
-        });
+        if (finalText === null && !errorShown) {
+          // No answer produced.
+          bubble.innerHTML = '';
+          bubble.textContent = 'I apologize — something went wrong. Please try again.';
+        }
+      } catch (err) {
+        bubble.innerHTML = '';
+        bubble.textContent = 'I apologize — something went wrong. Please try again.';
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
+    }
 
-      headers.forEach(th => {
-        th.addEventListener('click', () => applySort(parseInt(th.dataset.col, 10)));
+    function autoResize() {
+      chatInput.style.height = 'auto';
+      chatInput.style.height = Math.min(chatInput.scrollHeight, 140) + 'px';
+    }
+
+    function initWelcome() {
+      messagesEl.innerHTML = '';
+      currentConversationId = null;
+      addMessage('assistant', WELCOME_MESSAGE);
+      updateActiveConversation();
+    }
+
+    /* ── Conversation sidebar ── */
+
+    // Format a timestamp (unix or SQLite/ISO string) as a relative label.
+    function relativeTime(ts) {
+      if (!ts) return '';
+      let date;
+      if (typeof ts === 'number') {
+        date = new Date(ts < 1e12 ? ts * 1000 : ts);
+      } else {
+        // SQLite "YYYY-MM-DD HH:MM:SS" is UTC — normalize to ISO with Z.
+        const norm = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(ts)
+          ? ts.replace(' ', 'T') + 'Z'
+          : ts;
+        date = new Date(norm);
+      }
+      if (isNaN(date.getTime())) return '';
+      const sec = Math.floor((Date.now() - date.getTime()) / 1000);
+      const min = Math.floor(sec / 60);
+      const hr  = Math.floor(min / 60);
+      const day = Math.floor(hr / 24);
+      if (sec < 60) return 'Just now';
+      if (min < 60) return min + (min === 1 ? ' minute ago' : ' minutes ago');
+      if (hr < 24)  return hr + (hr === 1 ? ' hour ago' : ' hours ago');
+      if (day === 1) return 'Yesterday';
+      if (day < 7)  return day + ' days ago';
+      return date.toLocaleDateString();
+    }
+
+    // Highlight the active conversation in the sidebar.
+    function updateActiveConversation() {
+      document.querySelectorAll('.conversation-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.id === String(currentConversationId));
       });
-    })();
+    }
+
+    function renderConversationList(conversations) {
+      conversationListEl.innerHTML = '';
+      if (!conversations.length) {
+        const empty = document.createElement('div');
+        empty.className = 'conversation-empty';
+        empty.textContent = 'No conversations yet';
+        conversationListEl.appendChild(empty);
+        return;
+      }
+      conversations.forEach(conv => {
+        const item = document.createElement('div');
+        item.className = 'conversation-item';
+        item.dataset.id = String(conv.id);
+        if (conv.id === currentConversationId) item.classList.add('active');
+
+        const main = document.createElement('div');
+        main.className = 'conversation-item-main';
+
+        const title = document.createElement('div');
+        title.className = 'conversation-title';
+        title.textContent = conv.title || 'Untitled conversation';
+
+        const time = document.createElement('div');
+        time.className = 'conversation-time';
+        time.textContent = relativeTime(conv.updated_at || conv.created_at);
+
+        main.appendChild(title);
+        main.appendChild(time);
+
+        const del = document.createElement('button');
+        del.className = 'btn-delete-conversation';
+        del.textContent = '🗑️';
+        del.title = 'Delete conversation';
+        del.addEventListener('click', (e) => {
+          e.stopPropagation();
+          deleteConversation(conv.id);
+        });
+
+        item.appendChild(main);
+        item.appendChild(del);
+        item.addEventListener('click', () => loadConversation(conv.id));
+        conversationListEl.appendChild(item);
+      });
+    }
+
+    async function fetchConversations() {
+      try {
+        const res = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: 'get_conversations', domain: DOMAIN }),
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        renderConversationList(data.conversations || []);
+      } catch (err) {
+        console.error('Failed to load conversations', err);
+      }
+    }
+
+    async function loadConversation(id) {
+      if (isLoading) return;
+      try {
+        const res = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: 'get_messages', conversationId: id }),
+        });
+        if (!res.ok) throw new Error('API error ' + res.status);
+        const data = await res.json();
+
+        currentConversationId = id;
+        messagesEl.innerHTML = '';
+        (data.messages || []).forEach(m => {
+          if (m.role === 'assistant') {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'message assistant';
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            renderFinalAnswer(bubble, m.content || '');
+            wrapper.appendChild(bubble);
+            messagesEl.appendChild(wrapper);
+          } else {
+            addMessage('user', m.content || '');
+          }
+        });
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+        updateActiveConversation();
+        // Collapse the sidebar overlay on mobile after selecting.
+        conversationSidebar.classList.remove('open');
+      } catch (err) {
+        console.error('Failed to load conversation', err);
+      }
+    }
+
+    async function deleteConversation(id) {
+      try {
+        const res = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: 'delete_conversation', conversationId: id }),
+        });
+        if (!res.ok) throw new Error('API error ' + res.status);
+        // If the open conversation was deleted, reset to a fresh chat.
+        if (id === currentConversationId) initWelcome();
+        fetchConversations();
+      } catch (err) {
+        console.error('Failed to delete conversation', err);
+      }
+    }
+
+    // Send button
+    sendBtn.addEventListener('click', () => sendMessage(chatInput.value));
+
+    // Enter to send (Shift+Enter = newline)
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage(chatInput.value);
+      }
+    });
+
+    // Auto-resize textarea
+    chatInput.addEventListener('input', autoResize);
+
+    // Clear button — behaves like starting a fresh conversation.
+    clearBtn.addEventListener('click', initWelcome);
+
+    // New conversation button (sidebar)
+    newConversationBtn.addEventListener('click', initWelcome);
+
+    // Mobile sidebar toggle
+    sidebarToggle.addEventListener('click', () => {
+      conversationSidebar.classList.toggle('open');
+    });
+
+    // Init on load
+    initWelcome();
+    fetchConversations();
   </script>
 </body>
 </html>
