@@ -8,7 +8,7 @@ Personal website — a static collection of single-file HTML pages, no build ste
 
 - **index.html** — hub/landing page; card grid linking to the other pages.
 - **dashboard.html** — daily dashboard: date, quote, to-do/goals checklists (client-only).
-- **phillies.html** — 2026 Phillies batting stats, sortable table (click any column header).
+- **phillies.html** — multi-agent AI Phillies Analyst (same architecture as china.html); no longer a static batting stats table.
 - **pokemon.html** — random Pokémon explorer, filterable by generation; uses the public PokeAPI (`pokeapi.co`).
 - **china.html** — the most advanced page: a multi-agent AI historian with persistent conversation memory.
 
@@ -25,14 +25,35 @@ Each page is a self-contained `.html` file with inline `<style>` and `<script>`.
   `conversation_id`, `status`, `plan`, `workers_starting`, `worker_done`, `worker_error`, `final_answer`, `done`, `error`.
   The client parses these in `handleEvent()` / `parseSSEEvent()` in china.html (split on `\n\n`, parse `event:` / `data:` lines).
 
+## Architecture — Dual-Domain Worker
+
+- The Worker is **dual-domain**: it serves both the **"china"** and **"phillies"** pages from the same codebase.
+- The browser sends a `domain` field in requests — `{ domain: "china" }` or `{ domain: "phillies" }` — to select which page's behavior applies.
+- The **`getPrompts(domain)`** function switches between the China and Phillies agent prompt sets.
+- Worker **status labels are domain-specific** — e.g. `📜 History Specialist` for China vs. `⚾ Franchise Historian` for Phillies.
+
 ## Architecture — D1 Database
 
 - Database name: **china-chat-memory**, bound to the Worker as `env.DB`.
 - Tables:
-  - `conversations (id, title, created_at, updated_at)`
+  - `conversations (id, title, domain, created_at, updated_at)`
   - `messages (id, conversation_id, role, content, created_at)`
+- The `conversations` table has a **`domain` column** (`TEXT NOT NULL DEFAULT 'china'`) so the same DB stores both China and Phillies conversations.
+  - **`getAllConversations` filters by `domain`** so each page's sidebar only shows its own conversations.
+  - **`getOrCreateConversation` saves the `domain`** when creating new conversations.
 - Worker request modes (sent as `mode` in the POST body): `multi_agent`, `get_conversations`, `get_messages`, `delete_conversation`.
 - **Conversation history is loaded server-side from the database, NOT tracked client-side.** The client only holds `currentConversationId` and sends it with each `multi_agent` request; the Worker rehydrates context from D1.
+
+## Phillies Page (phillies.html)
+
+- **No longer a static batting stats table** — it is now a **multi-agent AI Phillies Analyst** built on the **same architecture as china.html**: same SSE streaming, conversation sidebar, markdown rendering, and `Sources:` section.
+- Uses **Phillies red `#E81828`** as its accent (not the crimson `#C41E3A` used on china.html).
+- **Five Phillies-specific agents:**
+  - **Researcher** — live MLB data
+  - **Franchise Historian** — 1883–present
+  - **Sabermetrics Expert** — WAR / OPS+ / FIP
+  - **Data Analyst** — stat comparisons
+  - **Fan Culture Expert** — rivalries / traditions
 
 ## Visual Conventions
 
